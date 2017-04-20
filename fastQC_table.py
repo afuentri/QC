@@ -43,28 +43,32 @@ for i in range(0,len(inf),11):
     if inf[i + 7].startswith('Sequences flagged as poor quality'):
         inf[i + 7] = inf[i + 7].strip()
         d['secuencias_baja_calidad_inicial'] = inf[i + 7].split('\t')[1]
+    else:
+        d['secuencias_baja_calidad_inicial'] = 'None'
+
+    for l in range(0, len(text), 11):
+            
+        if text[l + 3].startswith('Filename'):
+            text[l + 3] = text[l + 3].strip()
+            print text[l + 3].split('\t')[1].split('-')[0]
+            if text[l + 3].split('\t')[1].startswith(d['nombre']):
         
-        for l in range(0, len(text), 11):
-            if text[l + 3].startswith('Filename'):
-                text[l + 3] = text[l + 3].strip()
-                print text[l + 3].split('\t')[1].split('-')[0]
-                if d['nombre'] == text[l + 3].split('\t')[1].split('-')[0]:
-        
-                    text[l + 6] = text[l + 6].strip()
-                    text[l + 7] = text[l + 7].strip()
-                    d['numero_lecturas_trim'] = text[l + 6].split('\t')[1] 
-                    d['secuencias_baja_calidad_trim'] = text[l + 7].split('\t')[1]
+                text[l + 6] = text[l + 6].strip()
+                text[l + 7] = text[l + 7].strip()
+                d['numero_lecturas_trim'] = text[l + 6].split('\t')[1] 
+                d['secuencias_baja_calidad_trim'] = text[l + 7].split('\t')[1]
                 
-                    worksheet.write(row, col, ''.join(d['nombre']))
-                    worksheet.write(row, col + 1, d['numero_lecturas_inicial'])
-                    worksheet.write(row, col + 2, d['numero_lecturas_trim'])
-                    worksheet.write(row, col + 3, d['secuencias_baja_calidad_inicial'])
-                    worksheet.write(row, col + 4, d['secuencias_baja_calidad_trim'])
-                    worksheet.write(row, col + 5, (1-(int(d['numero_lecturas_trim'])/float(d['numero_lecturas_inicial'])))*100)
-                    worksheet.write(row, col + 6, int(d['numero_lecturas_inicial'])-int(d['numero_lecturas_trim'])) 
-                    col = 0
-                    row += 1
-                    break
+                worksheet.write(row, col, ''.join(d['nombre']))
+                worksheet.write(row, col + 1, d['numero_lecturas_inicial'])
+                worksheet.write(row, col + 2, d['numero_lecturas_trim'])
+                worksheet.write(row, col + 3, d['secuencias_baja_calidad_inicial'])
+                worksheet.write(row, col + 4, d['secuencias_baja_calidad_trim'])
+                worksheet.write(row, col + 5, (1-(int(d['numero_lecturas_trim'])/float(d['numero_lecturas_inicial'])))*100)
+                worksheet.write(row, col + 6, int(d['numero_lecturas_inicial'])-int(d['numero_lecturas_trim'])) 
+                col = 0
+                row += 1
+                break
+            
 workbook.close()
 f_pre.close()
 f_post.close()
