@@ -37,9 +37,13 @@ for i in range(0,len(inf),11):
         nombre = inf[i + 3].split('\t')[1]
         d['nombre'] = nombre.split('.')[0] #+ '.' + nombre.split('.')[1]
         print d['nombre']
+    else:
+        d['nombre'] = 'None'
     if inf[i + 6].startswith('Total Sequences'):
         inf[i + 6] = inf[i + 6].strip()
         d['numero_lecturas_inicial'] = inf[i + 6].split('\t')[1]
+    else:
+        d['numero_lecturas_inicial'] = 'None'
     if inf[i + 7].startswith('Sequences flagged as poor quality'):
         inf[i + 7] = inf[i + 7].strip()
         d['secuencias_baja_calidad_inicial'] = inf[i + 7].split('\t')[1]
@@ -68,6 +72,9 @@ for i in range(0,len(inf),11):
                 col = 0
                 row += 1
                 break
+        else:
+            d['numero_lecturas_trim'] = 'None'
+            d['secuencias_baja_calidad_trim'] = 'None'
             
 workbook.close()
 f_pre.close()
