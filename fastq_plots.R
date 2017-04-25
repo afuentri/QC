@@ -2,6 +2,7 @@
 # R script for fastQC_table.py fastqc output stats table plots for read number distribution generation
 # The first argument must be an excel file whose "Sheet1" has the number of reads per sample on a column
 # named "numero_lecturas_inicial". The second argument will be the output folder without final slash.
+# Example: Rscript /srv/QC/fastq_plots.R fastq_stats.xlsx /home/afuentri/tesis_pilar-griselda/QC_tables
 
 # Import libraries
 library(xlsx)
@@ -19,7 +20,7 @@ if (length(args)!=2) {
 stats <- read.xlsx(args[1], sheetName = "Sheet1")
 
 # Convert column to numeric type (important)
-stats$numero_lecturas_inicial = as.numeric(stats$numero_lecturas_inicial)
+stats$numero_lecturas_inicial = as.numeric(as.character(stats$numero_lecturas_inicial))
 
 # Plotting
 
@@ -30,7 +31,7 @@ ylab("conteo") + xlab("numero de lecturas") +
 ggtitle("Distribucion de numero de lecturas en los FASTQ")
 
 ## Save plot
-dev.copy(png, paste(args[2], 'read_counts.png', sep = '/')
+dev.copy(png, paste(args[2], 'read_counts.png', sep = '/'))
 dev.off()
 
 ## Density
@@ -40,5 +41,5 @@ ylab("densidad") + xlab("numero de lecturas") +
 ggtitle("Densidad de lecturas en los FASTQ")
 
 ## Save plot
-dev.copy(png, paste(args[2], 'read_density.png', sep = '/')
+dev.copy(png, paste(args[2], 'read_density.png', sep = '/'))
 dev.off()
