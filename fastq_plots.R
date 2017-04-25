@@ -21,6 +21,8 @@ stats <- read.xlsx(args[1], sheetName = "Sheet1")
 
 # Convert column to numeric type (important)
 stats$numero_lecturas_inicial = as.numeric(as.character(stats$numero_lecturas_inicial))
+v <- grep(pattern = "Undetermined", x = stats$Muestra)
+stats <- stats[-(as.vector(v)),]
 
 # Plotting
 
