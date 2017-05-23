@@ -23,7 +23,7 @@ worksheet.write('B1', 'numero lecturas inicial', bold)
 worksheet.write('D1', 'secuencias baja calidad inicial', bold)
 worksheet.write('C1', 'numero lecturas trim', bold)
 worksheet.write('E1', 'secuencias baja calidad trim', bold)
-worksheet.write('F1', 'numero lecturas eliminadas', bold) 
+worksheet.write('F1', '% lecturas eliminadas', bold) 
 worksheet.write('G1', 'numero lecturas eliminadas', bold)
 
 row = 1
