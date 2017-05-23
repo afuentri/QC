@@ -19,13 +19,13 @@ worksheet = workbook.add_worksheet()
 bold = workbook.add_format({'bold': True})
 
 worksheet.write('A1', 'Muestra', bold)
-worksheet.write('B1', 'numero_lecturas_inicial', bold)
-worksheet.write('D1', 'secuencias_baja_calidad_inicial', bold)
-worksheet.write('C1', 'numero_lecturas_trim', bold)
-worksheet.write('E1', 'secuencias_baja_calidad_trim', bold)
-worksheet.write('F1', '% reads eliminadas', bold) 
-worksheet.write('G1', 'numero posibles primer dimers', bold)
- 
+worksheet.write('B1', 'numero lecturas inicial', bold)
+worksheet.write('D1', 'secuencias baja calidad inicial', bold)
+worksheet.write('C1', 'numero lecturas trim', bold)
+worksheet.write('E1', 'secuencias baja calidad trim', bold)
+worksheet.write('F1', 'numero lecturas eliminadas', bold) 
+worksheet.write('G1', 'numero lecturas eliminadas', bold)
+
 row = 1
 col = 0
  
@@ -79,5 +79,3 @@ for i in range(0,len(inf),11):
 workbook.close()
 f_pre.close()
 f_post.close()
-                
-                    

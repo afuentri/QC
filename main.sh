@@ -55,16 +55,16 @@ FOLDER_FASTQS="$WORKING_DIR/fastqs/"
 FOLDER_TRIMMED="$WORKING_DIR/trimmed/"
 
 ## PATH FOR QC OUTPUT
-FOLDER_QC="$WORKING_DIR/QC"
+FOLDER_QC="$WORKING_DIR/QC/"
 
 ## PATH FOR FASTQC
-FOLDER_FASTQC="$WORKING_DIR/QC/fastqc"
+FOLDER_FASTQC="$WORKING_DIR/QC/fastqc/"
 
 ## PATH FOR FASTQC PREPROCESSED
-FOLDER_PREPROCESSED="$WORKING_DIR/QC/fastqc/preprocessed"
+FOLDER_PREPROCESSED="$WORKING_DIR/QC/fastqc/preprocessed/"
 
 ## PATH FOR FASTQC POSTPROCESSED
-FOLDER_POSTPROCESSED="$WORKING_DIR/QC/fastqc/postprocessed"
+FOLDER_POSTPROCESSED="$WORKING_DIR/QC/fastqc/postprocessed/"
 
 ## PATH FOR QC SCRIPTS
 SCRIPT_TABLE="/srv/dev/QC/fastQC_table.py"
@@ -110,7 +110,7 @@ done >> $FOLDER_QC$post_counts
 
 ## FASTQC PREPROCESSED
 echo "Using FASTQC:  "
-fastqc
+fastqc --version
 
 for i in $FOLDER_FASTQS*fastq.gz; do
 
@@ -124,9 +124,11 @@ done
 for i in $FOLDER_PREPROCESSED*.zip; do
 
     echo "$i: unzipping folder"
-    unzip $i
-    rm $FOLDER_PREPROCESSED*.zip
+    unzip $i -d $FOLDER_PREPROCESSED
+
 done
+
+rm $FOLDER_PREPROCESSED*.zip 
 
 ### FASTQC DATA SUMMARY
 fastq_stats="fastqs_stats.txt"
@@ -163,9 +165,11 @@ done
 for i in $FOLDER_POSTPROCESSED*.zip; do
 
     echo "$i: unzipping folder"
-    unzip $i
-    rm $FOLDER_POSTPROCESSED*.zip
+    unzip $i -d $FOLDER_POSTPROCESSED
+
 done
+
+rm $FOLDER_POSTPROCESSED*.zip
 
 ### FASTQC DATA SUMMARY
 fastq_stats="fastqs_stats.txt"
