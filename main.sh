@@ -20,33 +20,26 @@ do
         echo "-USE"
         echo "  bash main.sh -d 161207 -r RUNXXX"
         echo "                                                                     "
-        echo "This script performs an IGH analysis from raw fastqs"
-        echo "sequenced with Illumina Miseq. The input required is: "
+        echo "This script performs an initial QC analysis for raw fastqs"
+        echo "and trimmed fastqs sequenced with Illumina Miseq. The input required is: "
         echo "                                                                     "
         echo "Options:"
         echo "  -h: display this help message"
-        echo "  -d: Run date in format YYMMDD"
-        echo "  -r: RUN ID in format RUNXXX"
+        echo "  -p: working dir (absolut path without final slash)"
         echo "*********************************************************************\
 ***************************************************************************************"
-        echo "Before executing this script, miseq_historico must be mounted on the machine." 
         echo "*********************************************************************\
 ***************************************************************************************"
         echo "GOOD LUCK"
         exit 1
         ;;
-        d) dat=${OPTARG}
-        ;;
-        r) run=${OPTARG}
+        p) wd=${OPTARG}
         ;;
     esac
 done
 
 ## Run date must be inserted in format YYMMDD RUNXXX
-WORKING_DIR="/storage/ethernus_ugdg_HPC_data2/IgHs/projects/$dat"_"$run"
-
-## PATH FOR ALL THE projects
-PROJECTS_DIR="/storage/ethernus_ugdg_HPC_data2/IgHs/projects"
+WORKING_DIR="$wd"
 
 ## PATH FOR FASTQS
 FOLDER_FASTQS="$WORKING_DIR/fastqs/"
