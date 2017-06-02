@@ -6,11 +6,7 @@
 
 ## PARSE ARGUMENTS
 
-genome=false
-alignment=false
-repository=false
-
-while getopts hd:r:s:gm: option
+while getopts hp: option
 do
     case "${option}"
     in
@@ -65,7 +61,6 @@ SCRIPT_TABLE="/srv/dev/QC/fastQC_table.py"
 ## Echoes
 
 echo "WORKING DIRECTORY: $WORKING_DIR"
-echo "FOLDER PROJECTS: $PROJECTS_DIR"
 echo "FOLDER FASTQS: $FOLDER_FASTQS"
 echo "FOLDER TRIMMED: $FOLDER_TRIMMED"
 echo "FOLDER QC: $FOLDER_QC"
