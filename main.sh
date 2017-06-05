@@ -100,13 +100,18 @@ done >> $FOLDER_QC$post_counts
 echo "Using FASTQC:  "
 fastqc --version
 
+cmd="CMD_preprocessed.cmd"
+log="LOG_preprocessed.log"
+
 for i in $FOLDER_FASTQS*fastq.gz; do
 
     fastq_name=$(basename $i)
-    echo "$fastq_name : Starting pretrimming quality control analysis"
-    fastqc $i -o $FOLDER_PREPROCESSED
+    
+    echo "fastqc $i -o $FOLDER_PREPROCESSED"
 
-done
+done > $FOLDER_PREPROCESSED$cmd
+
+cat $FOLDER_PREPROCESSED$cmd | parallel --joblog $FOLDER_PREPROCESSED$log -j10
 
 ### EXTRACTING FOLDERS
 for i in $FOLDER_PREPROCESSED*.zip; do
@@ -140,13 +145,21 @@ cat $FOLDER_PREPROCESSED$summary | cut -f1,2 | sort | uniq -c > $FOLDER_PREPROCE
 
 ## FASTQC POSTPROCESSED
 
+echo "Using FASTQC:  "
+fastqc --version
+
+cmd="CMD_postprocessed.cmd"
+log="LOG_postprocessed.log"
+
 for i in $FOLDER_TRIMMED*fastq.gz; do
 
     fastq_name=$(basename $i)
-    echo "$fastq_name : Starting postrimming quality control analysis"
-    fastqc $i -o $FOLDER_POSTPROCESSED
 
-done
+    echo "fastqc $i -o $FOLDER_POSTPROCESSED"
+
+done > $FOLDER_POSTPROCESSED$cmd
+
+cat $FOLDER_POSTPROCESSED$cmd | parallel --joblog $FOLDER_POSTPROCESSED$log -j10
 
 
 ### EXTRACTING FOLDERS
