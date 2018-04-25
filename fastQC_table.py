@@ -3,6 +3,7 @@
 import sys
 import xlsxwriter
 import os
+import fastq_unifier
 
 pre = sys.argv[1]
 post = sys.argv[2]
@@ -49,19 +50,11 @@ for i in range(0,len(inf),11):
     if inf[i + 3].startswith('Filename'):
         inf[i + 3] = inf[i + 3].strip()
         nombre = inf[i + 3].split('\t')[1]
-        sample_list = nombre.split('_')
-        
-        if 'R1' in sample_list:
-            cut = sample_list.index('R1') + 1
-            d['nombre'] = '_'.join(sample_list[:cut])
-        elif 'R2' in sample_list:
-            cut = sample_list.index('R2') + 1
-            d['nombre'] = '_'.join(sample_list[:cut])
-        else:
-            d['nombre'] = sample_list[0]
-        print 'Sample name: %s' %d['nombre']
-    else:
-        d['nombre'] = 'None'
+        nombre_list = [nombre]
+        fastq_dict = fastq_unifier.fastq_dictionary(nombre_list)
+
+        d['muestra'] = fastq_dict[nombre]['sample_name'] + '_' + fastq_dict[nombre]['read']
+        trimmed_name = fastq_dict[nombre]['trimmed_name']
 
     if inf[i + 6].startswith('Total Sequences'):
         inf[i + 6] = inf[i + 6].strip()
@@ -80,25 +73,14 @@ for i in range(0,len(inf),11):
         if text[l + 3].startswith('Filename'):
             text[l + 3] = text[l + 3].strip()
             nombre2 = text[l + 3].split('\t')[1]
-            sample_list2 = nombre2.split('_')
-            
-            if 'R1' in sample_list2:
-                cut = sample_list2.index('R1') + 1
-                n = '_'.join(sample_list2[:cut])
-            elif 'R2' in sample_list2:
-                cut = sample_list2.index('R2') + 1
-                n = '_'.join(sample_list2[:cut])
-            else:
-                n = sample_list[0]
-            
-            if n == d['nombre']:
+            if nombre2 == trimmed_name:
                 print 'Found pair %s' %nombre2
                 text[l + 6] = text[l + 6].strip()
                 text[l + 7] = text[l + 7].strip()
                 d['numero_lecturas_trim'] = text[l + 6].split('\t')[1] 
                 d['secuencias_baja_calidad_trim'] = text[l + 7].split('\t')[1]
                 
-                worksheet.write(row, col, ''.join(d['nombre']))
+                worksheet.write(row, col, ''.join(d['muestra']))
                 worksheet.write(row, col + 1, d['numero_lecturas_inicial'])
                 worksheet.write(row, col + 2, d['numero_lecturas_trim'])
                 worksheet.write(row, col + 3, d['secuencias_baja_calidad_inicial'])
