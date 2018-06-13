@@ -135,12 +135,27 @@ done
 ### FASTQC DATA SUMMARY
 summary="summary.txt"
 resume="resume.txt"
+FAIL_BSQ="FAILED_per-base-sequence-quality.txt"
+FAIL_SQS="FAILED_per-sequence-queality.txt"
+FAIL_BS="FAILED_basic-statistics.txt"
+FAIL_GC="FAILED_GC-content.txt"
+FAIL_BNC="FAILED_per-base-N-content.txt"
+FAIL_SLD="FAILED_sequence-length-distribution.txt"
+FAIL_AC="FAILED_adapter-content.txt"
+
 for i in $(find $FOLDER_PREPROCESSED -name summary.txt); do
 
     cat $i >> $FOLDER_PREPROCESSED$summary
 done
 
 cat $FOLDER_PREPROCESSED$summary | cut -f1,2 | sort | uniq -c > $FOLDER_PREPROCESSED$resume
+cat $FOLDER_PREPROCESSED$summary | grep "FAIL" | grep "Per base sequence quality" | cut -f3 > $FOLDER_PREPROCESSED$FAIL_BSQ
+cat $FOLDER_PREPROCESSED$summary | grep "FAIL" | grep "Per sequence quality scores" | cut -f3 > $FOLDER_PREPROCESSED$FAIL_SQS
+cat $FOLDER_PREPROCESSED$summary | grep "FAIL" | grep "Basic Statistics" | cut -f3 > $FOLDER_PREPROCESSED$FAIL_BS
+cat $FOLDER_PREPROCESSED$summary | grep "FAIL" | grep "Per sequence GC content" | cut -f3 > $FOLDER_PREPROCESSED$FAIL_GC
+cat $FOLDER_PREPROCESSED$summary | grep "FAIL" | grep "Per base N content" | cut -f3 > $FOLDER_PREPROCESSED$FAIL_BNC
+cat $FOLDER_PREPROCESSED$summary | grep "FAIL" | grep "Sequence Length Distribution" | cut -f3 > $FOLDER_PREPROCESSED$FAIL_SLD
+cat $FOLDER_PREPROCESSED$summary | grep "FAIL" | grep "Adapter Content" | cut -f3 > $FOLDER_PREPROCESSED$FAIL_AC
 
 
 ## FASTQC POSTPROCESSED
@@ -184,13 +199,28 @@ done
 ### FASTQC DATA SUMMARY
 summary="summary.txt"
 resume="resume.txt"
+FAIL_BSQ="FAILED_per-base-sequence-quality.txt"
+FAIL_SQS="FAILED_per-sequence-queality.txt"
+FAIL_BS="FAILED_basic-statistics.txt"
+FAIL_GC="FAILED_GC-content.txt"
+FAIL_BNC="FAILED_per-base-N-content.txt"
+FAIL_SLD="FAILED_sequence-length-distribution.txt"
+FAIL_AC="FAILED_adapter-content.txt"
+
 for i in $(find $FOLDER_POSTPROCESSED -name summary.txt); do
 
     cat $i >> $FOLDER_POSTPROCESSED$summary
+
 done
 
 cat $FOLDER_POSTPROCESSED$summary | cut -f1,2 | sort | uniq -c > $FOLDER_POSTPROCESSED$resume
+cat $FOLDER_POSTPROCESSED$summary | grep "FAIL" | grep "Per base sequence quality" | cut -f3 > $FOLDER_POSTPROCESSED$FAIL_BSQ
+cat $FOLDER_POSTPROCESSED$summary | grep "FAIL" | grep "Per sequence quality scores" | cut -f3 > $FOLDER_POSTPROCESSED$FAIL_SQS
+cat $FOLDER_POSTPROCESSED$summary | grep "FAIL" | grep "Basic Statistics" | cut -f3 > $FOLDER_POSTPROCESSED$FAIL_BS
+cat $FOLDER_POSTPROCESSED$summary | grep "FAIL" | grep "Per sequence GC content" | cut -f3 > $FOLDER_POSTPROCESSED$FAIL_GC
+cat $FOLDER_POSTPROCESSED$summary | grep "FAIL" | grep "Per base N content" | cut -f3 > $FOLDER_POSTPROCESSED$FAIL_BNC
+cat $FOLDER_POSTPROCESSED$summary | grep "FAIL" | grep "Sequence Length Distribution" | cut -f3 > $FOLDER_POSTPROCESSED$FAIL_SLD
+cat $FOLDER_POSTPROCESSED$summary | grep "FAIL" | grep "Adapter Content" | cut -f3 > $FOLDER_POSTPROCESSED$FAIL_AC
 
 ## TABLE GENERATION
-
 python $SCRIPT_TABLE $FOLDER_PREPROCESSED$fastq_stats $FOLDER_POSTPROCESSED$fastq_stats $FOLDER_QC
