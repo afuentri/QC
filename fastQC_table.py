@@ -57,8 +57,7 @@ for i in range(0,len(inf),11):
         inf[i + 3] = inf[i + 3].strip()
         nombre = inf[i + 3].split('\t')[1]
         nombre_list = [nombre]
-        fastq_dict = fastq_unifier.fastq_dictionary(nombre_list)
-
+        fastq_dict, extensions = fastq_unifier.fastq_dictionary(nombre_list)
         d['muestra'] = fastq_dict[nombre]['sample_name'] + '_' + fastq_dict[nombre]['read']
         trimmed_name = fastq_dict[nombre]['trimmed_name']
 
