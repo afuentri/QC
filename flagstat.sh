@@ -66,3 +66,20 @@ done > $FOLDER_FLAGSTAT$cmd
 
 cat $FOLDER_FLAGSTAT$cmd | parallel --joblog $FOLDER_FLAGSTAT$log -j10
 
+## TABLE
+
+echo "Mapping statistics to tabular format..."
+
+out_table="$FOLDER_FLAGSTATresume.csv"
+echo "file_name,count_reads_mapped,percent_reads_mapped" > $out_table
+
+for i in $FOLDER_FLAGSTAT*-stats.txt; do
+
+    l=$(cat $i | grep "mapped (")
+    reads=$(echo $l | cut -f1 -d"+")
+    perc=$(echo $l | cut -f2 -d"(" | cut -f1 -d":")
+
+    echo $(basename ${i%-stats.txt}),$reads,$perc | sed 's/ //g' >> $out_table
+
+done
+
