@@ -41,6 +41,9 @@ BAMS_DIR="$wd"
 ## FOLDER FLAGSTAT
 FOLDER_FLAGSTAT="$BAMS_DIR/flagstat/"
 
+## SCRIPTS REPO
+QC="$scripts_repo/QC/"
+
 ## Echoes
 echo "WORKING DIRECTORY: $BAMS_DIR"
 echo "FOLDER MAPPING STATISTICS: $FOLDER_FLAGSTAT"
@@ -83,3 +86,5 @@ for i in $FOLDER_FLAGSTAT*-stats.txt; do
 
 done
 
+## plots mapping statistics
+python $QCmapstats.py $out_table
