@@ -15,10 +15,10 @@ do
 
 	echo "                                                                     "
         echo "-USE"
-	echo "  bash main.sh -d 161207 -r RUNXXX"
+	echo "  bash flagstat.sh -b working_dir"
 	echo "                                                                     "
-	echo "This script performs an initial QC analysis for raw fastqs"
-	echo "and trimmed fastqs sequenced with Illumina Miseq. The input required is: "
+	echo "This script performs an initial analysis of mapping statistics"
+	echo "The input required is: "
 	echo "                                                                     "
 	echo "Options:"
 	echo "  -h: display this help message"
@@ -87,4 +87,4 @@ for i in $FOLDER_FLAGSTAT*-stats.txt; do
 done
 
 ## plots mapping statistics
-python $QCmapstats.py $out_table
+python ${QC}mapstats.py $out_table
