@@ -15,6 +15,7 @@ pre = sys.argv[1]
 post = sys.argv[2]
 # out path must be given
 out_path = sys.argv[3]
+folder_fastqs = sys.argv[4]
 
 with open(pre, 'r') as f_pre:
     inf = f_pre.readlines()
@@ -57,7 +58,7 @@ for i in range(0,len(inf),11):
         inf[i + 3] = inf[i + 3].strip()
         nombre = inf[i + 3].split('\t')[1]
         nombre_list = [nombre]
-        fastq_dict, extensions = fastq_unifier.fastq_dictionary(nombre_list)
+        fastq_dict, extensions, sample_name_dict, sample_name_read_dict, merged, pairs_raw, pairs_trimmed, trimming, trim_dict = fastq_unifier.fastq_dictionary(nombre_list, folder_fastqs)
         d['muestra'] = fastq_dict[nombre]['sample_name'] + '_' + fastq_dict[nombre]['read']
         trimmed_name = fastq_dict[nombre]['trimmed_name']
 
