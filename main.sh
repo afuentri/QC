@@ -40,7 +40,7 @@ WORKING_DIR="$wd"
 ## PATH FOR FASTQS
 FOLDER_MERGED="$WORKING_DIR/merged/"
 
-if [ -d $FOLDER_MERGED]; then
+if [ -d $FOLDER_MERGED ]; then
     FOLDER_FASTQS="$WORKING_DIR/merged/" 
 else
     FOLDER_FASTQS="$WORKING_DIR/fastqs/"
