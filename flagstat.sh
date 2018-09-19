@@ -86,4 +86,5 @@ for i in $FOLDER_FLAGSTAT*-stats.txt; do
 done
 
 ## plots mapping statistics
+dos2unix $out_table
 python ${QC}mapstats.py $out_table
