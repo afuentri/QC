@@ -80,8 +80,10 @@ for i in $FOLDER_FLAGSTAT*-stats.txt; do
     l=$(cat $i | grep "mapped (")
     reads=$(echo $l | cut -f1 -d"+")
     perc=$(echo $l | cut -f2 -d"(" | cut -f1 -d":" | sed 's/%//g')
-
-    echo $(basename ${i%-stats.txt}),$reads,$perc,$(basename ${i%-stats.txt} | cut -f1,2),$(basename ${i%-stats.txt} | cut -f3) | sed 's/ //g' >> $out_table
+    s=$(basename ${i%-stats.txt})
+    c=$(echo $s | rev | cut -f1 -d"-" | rev )
+    sname=$(echo $s | sed "s/-$c//g") # double quotes when using a variable as pattern
+    echo $s,$reads,$perc,$sname,$c | sed 's/ //g' >> $out_table
 
 done
 

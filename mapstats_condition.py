@@ -21,7 +21,7 @@ a['percent_reads_mapped'] = a['percent_reads_mapped'].astype(int)
 # number of reads mapped
 # size a4 paper
 plt.figure(figsize=(15,8))
-az = sns.barplot(x="file_name", y="count_reads_mapped", data=a)
+az = sns.barplot(x="sample_name", y="count_reads_mapped", data=a, hue="condition")
 az.set_xticklabels(az.get_xticklabels(), rotation=90)
 plt.tight_layout()
 plt.savefig(path_name1)
@@ -30,7 +30,7 @@ plt.gcf().clear()
 # percent of reads from the total reads which map against the reference
 # size a4 paper
 plt.figure(figsize=(15,8))
-az = sns.barplot(x="file_name", y="percent_reads_mapped", data=a, hue="condition")
+az = sns.barplot(x="sample_name", y="percent_reads_mapped", data=a, hue="condition")
 az.set_xticklabels(az.get_xticklabels(), rotation=90)
 plt.tight_layout()
 plt.savefig(path_name2)
