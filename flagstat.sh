@@ -60,7 +60,6 @@ log="LOG_flagstat.log"
 
 for i in $BAMS_DIR/*sorted.bam; do
 
-    echo "echo $i"
     name_bam=$(basename $i)
     stats_out="$FOLDER_FLAGSTAT${name_bam%-sorted.bam}-stats.txt"
     echo "samtools flagstat $i > $stats_out"
