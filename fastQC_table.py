@@ -11,8 +11,12 @@ sys.path.append(path_fastq_unifier)
 # import the module
 import fastq_unifier
 
-pre = sys.argv[1]
-post = sys.argv[2]
+pre_folder = sys.argv[1]
+pre = os.path.join(pre_folder, 'fastqs_stats.txt')
+pre_quality = os.path.join(pre_folder, 'FAILED_per-base-sequence-quality.txt')
+post_folder = sys.argv[2]
+post = os.path.join(post_folder, 'fastqs_stats.txt')
+post_quality = os.path.join(post_folder, 'FAILED_per-base-sequence-quality.txt')
 # out path must be given
 out_path = sys.argv[3]
 folder_fastqs = sys.argv[4]
@@ -22,6 +26,12 @@ with open(pre, 'r') as f_pre:
 
 with open(post, 'r') as f_post:
     text = f_post.readlines()
+
+with open(pre_quality, 'r') as f_preq:
+    infq = f_preq.read().splitlines()
+
+with open(post_quality, 'r') as f_postq:
+    textq = f_postq.read().splitlines()
 
 # Create workbook
 out = os.path.join(out_path, 'fastq_stats.xlsx')
@@ -50,6 +60,8 @@ worksheet.write('G1', 'numero lecturas eliminadas', bold)
 
 row = 1
 col = 0
+failed_pre = []
+failed_post = []
 
 for i in range(0,len(inf),11):
     d = {}
@@ -61,6 +73,9 @@ for i in range(0,len(inf),11):
         fastq_dict, extensions, sample_name_dict, sample_name_read_dict, merged, pairs_raw, pairs_trimmed, trimming, trim_dict = fastq_unifier.fastq_dictionary(nombre_list, folder_fastqs)
         d['muestra'] = fastq_dict[nombre]['sample_name'] + '_' + fastq_dict[nombre]['read']
         trimmed_name = fastq_dict[nombre]['trimmed_name']
+        if nombre in infq:
+            failed_pre.append(d['muestra'])
+        
 
     if inf[i + 6].startswith('Total Sequences'):
         inf[i + 6] = inf[i + 6].strip()
@@ -85,14 +100,56 @@ for i in range(0,len(inf),11):
                 text[l + 7] = text[l + 7].strip()
                 d['numero_lecturas_trim'] = text[l + 6].split('\t')[1] 
                 d['secuencias_baja_calidad_trim'] = text[l + 7].split('\t')[1]
-                
-                worksheet.write(row, col, ''.join(d['muestra']))
-                worksheet.write(row, col + 1, d['numero_lecturas_inicial'])
-                worksheet.write(row, col + 2, d['numero_lecturas_trim'])
+                if nombre2 in textq:
+                    failed_post.append(d['muestra'])
+
+                # add colour to cells following quality conditions
+                ## red
+                format1 = workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006'})
+                ## green
+                format2 = workbook.add_format({'bg_color': '#C6EFCE', 'font_color': '#006100'})
+                ## orange
+                format3 = workbook.add_format({'bg_color': '#ffc24e', 'font_color': '#d48b00'})
+                ## yellow
+                format4 = workbook.add_format({'bg_color': '#ffe85d', 'font_color': '#a39c0a'})
+
+                # sample_name
+                if d['muestra'] in failed_pre and d['muestra'] not in failed_post:
+                    worksheet.write(row, col, ''.join(d['muestra']), format4)
+                elif d['muestra'] in failed_post and d['muestra'] not in failed_pre:
+                    worksheet.write(row, col, ''.join(d['muestra']), format3)
+                elif d['muestra'] in failed_post and d['muestra'] in failed_pre:
+                    worksheet.write(row, col, ''.join(d['muestra']), format1)
+                else:
+                    worksheet.write(row, col, ''.join(d['muestra']))
+
+                # number of total reads
+                if int(d['numero_lecturas_inicial']) < 1000:
+                    worksheet.write(row, col + 1, d['numero_lecturas_inicial'], format1)
+                else:
+                    worksheet.write(row, col + 1, d['numero_lecturas_inicial'])
+                if int(d['numero_lecturas_trim']) < 1000:
+                    worksheet.write(row, col + 2, d['numero_lecturas_trim'], format1)
+                else:
+                    worksheet.write(row, col + 2, d['numero_lecturas_trim'])
+
+                # low quality sequences (fastqs_stats.txt parsing)
                 worksheet.write(row, col + 3, d['secuencias_baja_calidad_inicial'])
                 worksheet.write(row, col + 4, d['secuencias_baja_calidad_trim'])
-                worksheet.write(row, col + 5, (1-(int(d['numero_lecturas_trim'])/float(d['numero_lecturas_inicial'])))*100)
-                worksheet.write(row, col + 6, int(d['numero_lecturas_inicial'])-int(d['numero_lecturas_trim'])) 
+
+                # percent of reads removed
+                percent_reads_removed = (1-(int(d['numero_lecturas_trim'])/float(d['numero_lecturas_inicial'])))*100
+                if percent_reads_removed >= 10.0 and percent_reads_removed < 30.0:
+                    worksheet.write(row, col + 5, percent_reads_removed, format4)
+                elif percent_reads_removed >= 30.0 and percent_reads_removed < 50.0:
+                    worksheet.write(row, col + 5, percent_reads_removed, format3)
+                elif percent_reads_removed >= 50.0:
+                    worksheet.write(row, col + 5, percent_reads_removed, format1)
+                else:
+                    worksheet.write(row, col + 5, percent_reads_removed)
+                # column count of reads removed
+                worksheet.write(row, col + 6, int(d['numero_lecturas_inicial'])-int(d['numero_lecturas_trim']))
+                
                 col = 0
                 row += 1
                 break
