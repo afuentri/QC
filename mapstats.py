@@ -15,6 +15,7 @@ path_name2 = os.path.join(os.path.dirname(fhand), 'percent.png')
 
 # read flagstat out table and convert colums into numeric
 a = pd.read_csv(fhand, sep=',')
+a = a.dropna()
 a['count_reads_mapped'] = a['count_reads_mapped'].astype(int)
 a['percent_reads_mapped'] = a['percent_reads_mapped'].astype(int)
 
