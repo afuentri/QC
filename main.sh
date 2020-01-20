@@ -85,7 +85,7 @@ mkdir $FOLDER_POSTPROCESSED
 
 pre_counts="pre-triming_counts.txt"
 
-for i in $FOLDER_FASTQS*fastq.gz; do
+for i in $FOLDER_FASTQS*.f*q*; do
     
     echo $i
     zcat $i | echo $((`wc -l`/4))
@@ -94,7 +94,7 @@ done >> $FOLDER_QC$pre_counts
 
 post_counts="post-triming_counts.txt"
 
-for i in $FOLDER_TRIMMED*fastq.gz; do
+for i in $FOLDER_TRIMMED*.f*q*; do
 
     echo $i
     zcat $i | echo $((`wc -l`/4))
@@ -108,7 +108,7 @@ fastqc --version
 cmd="CMD_preprocessed.cmd"
 log="LOG_preprocessed.log"
 
-for i in $FOLDER_FASTQS*fastq.gz; do
+for i in $FOLDER_FASTQS*.f*q*; do
 
     fastq_name=$(basename $i)
     
@@ -171,7 +171,7 @@ fastqc --version
 cmd="CMD_postprocessed.cmd"
 log="LOG_postprocessed.log"
 
-for i in $FOLDER_TRIMMED*fastq.gz; do
+for i in $FOLDER_TRIMMED*.f*q*; do
 
     fastq_name=$(basename $i)
 
