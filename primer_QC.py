@@ -15,6 +15,7 @@ def revcomp(seq):
 
 f = sys.argv[1]
 p = sys.argv[2]
+out = sys.argv[3]
 
 dprimers = {}
 
@@ -67,5 +68,6 @@ for e in dprimers:
 ## write to out table
 primers_name = '_'.join(os.path.basename(p).split(".")[0:-1])
 out_name = os.path.basename(f).replace(".fastq.gz", "_{}.csv".format(primers_name))
+otable = os.path.join(out, out_name)
 df = pd.DataFrame.from_dict(dcounts, orient='index')
-df.to_csv(out_name)
+df.to_csv(otable)

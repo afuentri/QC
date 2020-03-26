@@ -74,8 +74,28 @@ FOLDER_PREPROCESSED="$WORKING_DIR/QC/fastqc/preprocessed/"
 ## PATH FOR FASTQC POSTPROCESSED
 FOLDER_POSTPROCESSED="$WORKING_DIR/QC/fastqc/postprocessed/"
 
+## OUT_PRIMERS
+OUT_PRIMERS="$WORKING_DIR/QC/primers/"
+
 ## PATH FOR QC SCRIPTS
 SCRIPT_TABLE="/srv/dev/QC/fastQC_table.py"
+PRIMERS="/srv/dev/QC/primer_QC.py"
+
+## BARCODES
+if [ -f $adaptersLeft ] && [ -f $adaptersRight ]; then
+    
+    adapterleft=$adaptersLeft
+    adapterright=$adaptersRight
+else
+    echo "Fatal error, can not find environment variables for adapters"
+fi
+
+## PRIMERS
+if [ $primers==true ]; then
+    primers5="$primers/primers_5.fasta"
+    primers3="$primers/primers_3.fasta"
+   
+fi
 
 ## Echoes
 echo "WORKING DIRECTORY: $WORKING_DIR"
@@ -87,12 +107,15 @@ echo "FOLDER FASTQC: $FOLDER_FASTQC"
 echo "FOLDER PREPROCESSED: $FOLDER_PREPROCESSED"
 echo "FOLDER POSTPROCESSED: $FOLDER_POSTPROCESSED"
 echo "SCRIPT TABLE: $SCRIPT_TABLE"
+echo "PRIMERS QC: $primers"
+echo "BARCODES QC: $adapterleft; $adapterright"
 
 # Creating folders
 mkdir $FOLDER_QC
 mkdir $FOLDER_FASTQC
 mkdir $FOLDER_PREPROCESSED
 mkdir $FOLDER_POSTPROCESSED
+mkdir $OUT_PRIMERS
 
 # Read counts
 
@@ -242,3 +265,53 @@ cat $FOLDER_POSTPROCESSED$summary | grep "FAIL" | grep "Adapter Content" | cut -
 
 ## TABLE GENERATION
 python $SCRIPT_TABLE $FOLDER_PREPROCESSED $FOLDER_POSTPROCESSED $FOLDER_QC $FOLDER_FASTQS
+
+## BARCODE AND PRIMERS QC
+## BARCODES (mandatory)
+FOLDER_MERGED="$WORKING_DIR/merged/"
+
+if [ -f $adapterleft ] && [ -f $adapterright ]; then
+
+    echo "OK: performing barcode stats"
+    for i in $FOLDER_MERGED*f*q*; do
+	
+	python $PRIMERS $i $adapterleft $OUT_PRIMERS
+	python $PRIMERS $i $adapterright $OUT_PRIMERS
+
+    done
+
+    for i in $FOLDER_TRIMMED*f*q*; do
+
+	python $PRIMERS $i $adapterleft $OUT_PRIMERS
+	python $PRIMERS $i $adapterright $OUT_PRIMERS
+    done
+	
+    
+else
+    echo "Can not find adapter sequences: FATAL ERROR"
+
+fi
+
+## PRIMERS (OPTIONAL)
+if [ $primers==true ]; then
+
+    if [ -f $primers5 ] && [ -f $primers3 ]; then
+
+	echo "OK: performing primer stats"
+	for i in $FOLDER_MERGED*f*q*; do
+	    
+	    python $PRIMERS $i $primers5 $OUT_PRIMERS
+	    python $PRIMERS $i $primers3 $OUT_PRIMERS
+	done
+
+	for i in $FOLDER_TRIMMED*f*q*; do
+	    python $PRIMERS $i $primers5 $OUT_PRIMERS
+	    python $PRIMERS $i $primers3 $OUT_PRIMERS
+	done
+	
+    else
+	echo "Primers QC option was selected but there are no primer files inside folder indicated"
+
+    fi
+
+fi
