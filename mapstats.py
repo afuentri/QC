@@ -10,8 +10,11 @@ import seaborn as sns
 sns.set(style="whitegrid")
 
 fhand = sys.argv[1]
-path_name1 = os.path.join(os.path.dirname(fhand), 'counts.png')
-path_name2 = os.path.join(os.path.dirname(fhand), 'percent.png')
+out_suf = sys.arg[2]
+name1 = '{}-counts.png'.format(out_suf)
+name2 ='{}-percent.png'.format(out_suf)
+path_name1 = os.path.join(os.path.dirname(fhand), name1)
+path_name2 = os.path.join(os.path.dirname(fhand), name2)
 
 # read flagstat out table and convert colums into numeric
 a = pd.read_csv(fhand, sep=',')

@@ -1,3 +1,4 @@
+
 #! /bin/bash                                 #
 # Azahara Maria Fuentes Trillo               #
 # Unidad de Genomica y Diagnostico Genetico  #
@@ -5,8 +6,9 @@
 ##############################################
 
 ## PARSE ARGUMENTS
+bed=false
 
-while getopts hb: option
+while getopts hb:l:: option
 do
 
     case "${option}"
@@ -23,6 +25,7 @@ do
 	echo "Options:"
 	echo "  -h: display this help message"
 	echo "  -b: folder with bam files"
+	echo "  -l: BED file with regions"
         echo "*********************************************************************\            
 ****************************************************************************************"
 	echo "*********************************************************************\  
@@ -32,6 +35,9 @@ do
 	;;
 	b) wd=${OPTARG}
 	;;
+	l) bed=${OPTARG}
+	;;
+       
     esac
 done
 
@@ -84,6 +90,27 @@ for i in $FOLDER_FLAGSTAT*-stats.txt; do
 
 done
 
+## TABLE TARGET REGIONS
+if [ $bed == true ]; then
+    out_table_reg=${FOLDER_FLAGSTAT}resume_targetregions.csv
+    echo "file_name,count_reads_mapped_targetregions,percent_reads_mapped_targetregions" > $out_table_reg
+    for i in $BAMS_DIR/*sorted.bam; do
+
+	sname=$(basename ${i%-sorted.bam})
+	## view mapped reads in the target regions
+	mapped=$(samtools view -F4 -L $bed $i | wc -l)
+	total=$(samtools view $i | wc -l)
+
+	echo $sname,$mapped,$((mapped/total)) >> $out_table_reg
+
+    done
+
+fi
+				   
 ## plots mapping statistics
 dos2unix $out_table
-python ${QC}mapstats.py $out_table
+python ${QC}mapstats.py $out_table 'all'
+
+dos2unix $out_table_reg
+python ${QC}mapstats.py $out_table_reg 'targetregions'
+

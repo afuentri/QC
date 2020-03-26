@@ -5,8 +5,9 @@
 ##############################################
 
 ## PARSE ARGUMENTS
+primers=false
 
-while getopts hp: option
+while getopts hp:b:: option
 do
     case "${option}"
     in
@@ -14,7 +15,7 @@ do
 
         echo "                                                                     "
         echo "-USE"
-        echo "  bash main.sh -d 161207 -r RUNXXX"
+        echo "  bash main.sh -p $working_dir -p primers"
         echo "                                                                     "
         echo "This script performs an initial QC analysis for raw fastqs"
         echo "and trimmed fastqs sequenced with Illumina Miseq. The input required is: "
@@ -22,6 +23,11 @@ do
         echo "Options:"
         echo "  -h: display this help message"
         echo "  -p: working dir (absolut path without final slash)"
+	echo "  -b: (optional) evaluate trimming of primers (folder with FASTA files with primer sequences to evaluate)"
+	echo "  Evaluation of Nextera barcodes will be performed always"
+	echo "  FASTA files in folder must be named and sepparated in the following way:"
+	echo "   - primers_5.fasta --> primer sequences removed on left end of reads"
+	echo "   - primers_3.fasta --> primer sequences removed on right end of reads"
         echo "*********************************************************************\
 ***************************************************************************************"
         echo "*********************************************************************\
@@ -31,6 +37,9 @@ do
         ;;
         p) wd=${OPTARG}
         ;;
+	b) primers=${OPTARG}
+        ;;
+       
     esac
 done
 
@@ -38,7 +47,11 @@ done
 WORKING_DIR="$wd"
 
 ## PATH FOR FASTQS
+FOLDER_MERGEDBC="$WORKING_DIR/merged_withoutbarcodes/"
 FOLDER_MERGED="$WORKING_DIR/merged/"
+
+if [ -d $FOLDER_MERGEDBC ]; then
+    FOLDER_MERGED=$FOLDER_MERGEDBC
 
 if [ -d $FOLDER_MERGED ]; then
     FOLDER_FASTQS="$WORKING_DIR/merged/" 
