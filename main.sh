@@ -50,9 +50,6 @@ WORKING_DIR="$wd"
 FOLDER_MERGEDBC="$WORKING_DIR/merged_withoutbarcodes/"
 FOLDER_MERGED="$WORKING_DIR/merged/"
 
-if [ -d $FOLDER_MERGEDBC ]; then
-    FOLDER_MERGED=$FOLDER_MERGEDBC
-
 if [ -d $FOLDER_MERGED ]; then
     FOLDER_FASTQS="$WORKING_DIR/merged/" 
 else
@@ -268,7 +265,6 @@ python $SCRIPT_TABLE $FOLDER_PREPROCESSED $FOLDER_POSTPROCESSED $FOLDER_QC $FOLD
 
 ## BARCODE AND PRIMERS QC
 ## BARCODES (mandatory)
-FOLDER_MERGED="$WORKING_DIR/merged/"
 
 if [ -f $adapterleft ] && [ -f $adapterright ]; then
 
@@ -311,7 +307,7 @@ if [ $primers==true ]; then
 	
     else
 	echo "Primers QC option was selected but there are no primer files inside folder indicated"
-
     fi
 
 fi
+
