@@ -21,7 +21,7 @@ with open(fof, 'r') as ffof:
 
     for line in ffof:
         line = line.strip()
-        sample_name = line.split('_')[0]
+        sample_name = os.path.basename(line).split('_')[0]
         
         df = pd.read_csv(line, sep=',', header=0,
                          names=['barcode','revcomp_right','right','revcomp_left', 'left'])

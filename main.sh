@@ -316,34 +316,34 @@ fi
 
 ## PLOT FOR ADAPTER AND PRIMERS
 
-fof_barcodesraw="$OUT_PRIMERSbarcodesraw.fof"
-fof_barcodestrimmed="$OUT_PRIMERSbarcodestrimmed.fof"
+fof_barcodesraw="${OUT_PRIMERS}barcodesraw.fof"
+fof_barcodestrimmed="${OUT_PRIMERS}barcodestrimmed.fof"
 
 ls $OUT_PRIMERS*_adapter_nextera.csv | grep -v "trimmed" > $fof_barcodesraw
 ls $OUT_PRIMERS*-trimmed_adapter_nextera.csv > $fof_barcodestrimmed
 
-python $BARCODEPLOT fof_barcodesraw $OUT_PRIMERS
-python $BARCODEPLOT fof_barcodestrimmed $OUT_PRIMERS
+python $BARCODEPLOT $fof_barcodesraw $OUT_PRIMERS
+python $BARCODEPLOT $fof_barcodestrimmed $OUT_PRIMERS
 
 ## FOR PRIMERS
 if [ $primers==true ]; then
     if [ -f $primers5 ] && [ -f $primers3 ]; then
 	echo "OK: performing primer plots"
 
-	fof_primers5raw="$OUT_PRIMERSprimers5raw.fof"
-	fof_primers3raw="$OUT_PRIMERSprimers3raw.fof"
-	fof_primers5trimmed="$OUT_PRIMERSprimers5trimmed.fof"
-	fof_primers3trimmed="$OUT_PRIMERSprimers3trimmed.fof"
+	fof_primers5raw="${OUT_PRIMERS}primers5raw.fof"
+	fof_primers3raw="${OUT_PRIMERS}primers3raw.fof"
+	fof_primers5trimmed="${OUT_PRIMERS}primers5trimmed.fof"
+	fof_primers3trimmed="${OUT_PRIMERS}primers3trimmed.fof"
 
 	ls $OUT_PRIMERS*_primers_3.csv | grep -v "trimmed" > $fof_primers3raw
 	ls $OUT_PRIMERS*_primers_5.csv | grep -v "trimmed" > $fof_primers5raw
 	ls $OUT_PRIMERS*-trimmed_primers_3.csv > $fof_primers3trimmed
 	ls $OUT_PRIMERS*-trimmed_primers_5.csv > $fof_primers5trimmed
 
-	python $PRIMERPLOT fof_primers3raw $OUT_PRIMERS
-	python $PRIMERPLOT fof_primers5raw $OUT_PRIMERS
-	python $PRIMERPLOT fof_primers3trimmed $OUT_PRIMERS
-	python $PRIMERPLOT fof_primers5trimmed $OUT_PRIMERS
+	python $PRIMERPLOT $fof_primers3raw $OUT_PRIMERS
+	python $PRIMERPLOT $fof_primers5raw $OUT_PRIMERS
+	python $PRIMERPLOT $fof_primers3trimmed $OUT_PRIMERS
+	python $PRIMERPLOT $fof_primers5trimmed $OUT_PRIMERS
 
     else
 	echo "Primers QC option was selected but there are no primer files inside folder indicated"
@@ -352,10 +352,6 @@ if [ $primers==true ]; then
 fi
 
 ## PDF REPORT
-
 fof_images="$OUTPRIMERSimages.fof"
-ls $OUTPRIMERS*.png > $fof_images
-
+ls $OUT_PRIMERS*.png > $fof_images
 python3.5 $REPORT $fof_images
-
-
