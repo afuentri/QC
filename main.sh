@@ -77,6 +77,8 @@ OUT_PRIMERS="$WORKING_DIR/QC/primers/"
 ## PATH FOR QC SCRIPTS
 SCRIPT_TABLE="/srv/dev/QC/fastQC_table.py"
 PRIMERS="/srv/dev/QC/primer_QC.py"
+BARCODEPLOT="/srv/dev/QC/barcodeplot.py"
+PRIMERPLOT="/srv/dev/QC/primersplot.py"
 
 ## BARCODES
 if [ -f $adaptersLeft ] && [ -f $adaptersRight ]; then
@@ -204,7 +206,7 @@ fastqc --version
 cmd="CMD_postprocessed.cmd"
 log="LOG_postprocessed.log"
 
-for i in $FOLDER_TRIMMED*.f*q*; do
+for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
 
     fastq_name=$(basename $i)
 
@@ -276,7 +278,7 @@ if [ -f $adapterleft ] && [ -f $adapterright ]; then
 
     done
 
-    for i in $FOLDER_TRIMMED*f*q*; do
+    for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
 
 	python $PRIMERS $i $adapterleft $OUT_PRIMERS
 	python $PRIMERS $i $adapterright $OUT_PRIMERS
@@ -300,7 +302,7 @@ if [ $primers==true ]; then
 	    python $PRIMERS $i $primers3 $OUT_PRIMERS
 	done
 
-	for i in $FOLDER_TRIMMED*f*q*; do
+	for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
 	    python $PRIMERS $i $primers5 $OUT_PRIMERS
 	    python $PRIMERS $i $primers3 $OUT_PRIMERS
 	done
@@ -311,3 +313,39 @@ if [ $primers==true ]; then
 
 fi
 
+## PLOT FOR ADAPTER AND PRIMERS
+
+fof_barcodesraw="$OUT_PRIMERSbarcodesraw.fof"
+fof_barcodestrimmed="$OUT_PRIMERSbarcodestrimmed.fof"
+
+ls $OUT_PRIMERS*_adapter_nextera.csv | grep -v "trimmed" > fof_barcodesraw
+ls $OUT_PRIMERS*-trimmed_adapter_nextera.csv > fof_barcodestrimmed
+
+python $BARCODEPLOT fof_barcodesraw $OUT_PRIMERS
+python $BARCODEPLOT fof_barcodestrimmed $OUT_PRIMERS
+
+## FOR PRIMERS
+if [ $primers==true ]; then
+    if [ -f $primers5 ] && [ -f $primers3 ]; then
+	echo "OK: performing primer plots"
+
+	fof_primers5raw="$OUT_PRIMERSprimers5raw.fof"
+	fof_primers3raw="$OUT_PRIMERSprimers3raw.fof"
+	fof_primers5trimmed="$OUT_PRIMERSprimers5trimmed.fof"
+	fof_primers3trimmed="$OUT_PRIMERSprimers3trimmed.fof"
+
+	ls $OUT_PRIMERS*_primers_3.csv | grep -v "trimmed" > fof_primers3raw
+	ls $OUT_PRIMERS*_primers_5.csv | grep -v "trimmed" > fof_primers5raw
+	ls $OUT_PRIMERS*-trimmed_primers_3.csv > fof_primers3trimmed
+	ls $OUT_PRIMERS*-trimmed_primers_5.csv > fof_primers5trimmed
+
+	python $PRIMERPLOT fof_primers3raw $OUT_PRIMERS
+	python $PRIMERPLOT fof_primers5raw $OUT_PRIMERS
+	python $PRIMERPLOT fof_primers3trimmed $OUT_PRIMERS
+	python $PRIMERPLOT fof_primers5trimmed $OUT_PRIMERS
+
+    else
+	echo "Primers QC option was selected but there are no primer files inside folder indicated"
+    fi
+
+fi
