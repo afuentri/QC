@@ -352,6 +352,6 @@ if [ $primers==true ]; then
 fi
 
 ## PDF REPORT
-fof_images="$OUTPRIMERSimages.fof"
+fof_images="${OUT_PRIMERS}images.fof"
 ls $OUT_PRIMERS*.png > $fof_images
-python3.5 $REPORT $fof_images
+python3.5 $REPORT $fof_images $OUT_PRIMERS
