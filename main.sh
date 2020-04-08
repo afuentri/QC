@@ -79,6 +79,7 @@ SCRIPT_TABLE="/srv/dev/QC/fastQC_table.py"
 PRIMERS="/srv/dev/QC/primer_QC.py"
 BARCODEPLOT="/srv/dev/QC/barcodeplot.py"
 PRIMERPLOT="/srv/dev/QC/primersplot.py"
+REPORT="/srv/dev/QC/report.py"
 
 ## BARCODES
 if [ -f $adaptersLeft ] && [ -f $adaptersRight ]; then
@@ -318,8 +319,8 @@ fi
 fof_barcodesraw="$OUT_PRIMERSbarcodesraw.fof"
 fof_barcodestrimmed="$OUT_PRIMERSbarcodestrimmed.fof"
 
-ls $OUT_PRIMERS*_adapter_nextera.csv | grep -v "trimmed" > fof_barcodesraw
-ls $OUT_PRIMERS*-trimmed_adapter_nextera.csv > fof_barcodestrimmed
+ls $OUT_PRIMERS*_adapter_nextera.csv | grep -v "trimmed" > $fof_barcodesraw
+ls $OUT_PRIMERS*-trimmed_adapter_nextera.csv > $fof_barcodestrimmed
 
 python $BARCODEPLOT fof_barcodesraw $OUT_PRIMERS
 python $BARCODEPLOT fof_barcodestrimmed $OUT_PRIMERS
@@ -334,10 +335,10 @@ if [ $primers==true ]; then
 	fof_primers5trimmed="$OUT_PRIMERSprimers5trimmed.fof"
 	fof_primers3trimmed="$OUT_PRIMERSprimers3trimmed.fof"
 
-	ls $OUT_PRIMERS*_primers_3.csv | grep -v "trimmed" > fof_primers3raw
-	ls $OUT_PRIMERS*_primers_5.csv | grep -v "trimmed" > fof_primers5raw
-	ls $OUT_PRIMERS*-trimmed_primers_3.csv > fof_primers3trimmed
-	ls $OUT_PRIMERS*-trimmed_primers_5.csv > fof_primers5trimmed
+	ls $OUT_PRIMERS*_primers_3.csv | grep -v "trimmed" > $fof_primers3raw
+	ls $OUT_PRIMERS*_primers_5.csv | grep -v "trimmed" > $fof_primers5raw
+	ls $OUT_PRIMERS*-trimmed_primers_3.csv > $fof_primers3trimmed
+	ls $OUT_PRIMERS*-trimmed_primers_5.csv > $fof_primers5trimmed
 
 	python $PRIMERPLOT fof_primers3raw $OUT_PRIMERS
 	python $PRIMERPLOT fof_primers5raw $OUT_PRIMERS
@@ -349,3 +350,12 @@ if [ $primers==true ]; then
     fi
 
 fi
+
+## PDF REPORT
+
+fof_images="$OUTPRIMERSimages.fof"
+ls $OUTPRIMERS*.png > $fof_images
+
+python3.5 $REPORT $fof_images
+
+
