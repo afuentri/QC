@@ -16,7 +16,7 @@ fof = sys.argv[1]
 outf = sys.argv[2]
 bigdf = pd.DataFrame.from_dict({})
 
-plotname = os.path.join(outf, fof.replace('.fof', '.png'))
+plotname = os.path.join(outf, os.path.basename(fof).replace('.fof', '.png'))
 with open(fof, 'r') as ffof:
 
     for line in ffof:

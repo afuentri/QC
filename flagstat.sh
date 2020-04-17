@@ -1,4 +1,3 @@
-
 #! /bin/bash                                 #
 # Azahara Maria Fuentes Trillo               #
 # Unidad de Genomica y Diagnostico Genetico  #
@@ -49,6 +48,7 @@ FOLDER_FLAGSTAT="$BAMS_DIR/flagstat/"
 
 ## SCRIPTS REPO
 QC="$scripts_repo/QC/"
+REPORT="${QC}report.py"
 
 ## Echoes
 echo "WORKING DIRECTORY: $BAMS_DIR"
@@ -91,26 +91,28 @@ for i in $FOLDER_FLAGSTAT*-stats.txt; do
 done
 
 ## TABLE TARGET REGIONS
-if [ $bed == true ]; then
+if [ -f $bed ]; then
     out_table_reg=${FOLDER_FLAGSTAT}resume_targetregions.csv
-    echo "file_name,count_reads_mapped_targetregions,percent_reads_mapped_targetregions" > $out_table_reg
+    echo "file_name,count_reads_mapped,percent_reads_mapped" > $out_table_reg
     for i in $BAMS_DIR/*sorted.bam; do
 
 	sname=$(basename ${i%-sorted.bam})
 	## view mapped reads in the target regions
 	mapped=$(samtools view -F4 -L $bed $i | wc -l)
 	total=$(samtools view $i | wc -l)
-
-	echo $sname,$mapped,$((mapped/total)) >> $out_table_reg
+	echo $sname,$mapped,$(echo "$mapped/$total*100" | bc -l) >> $out_table_reg
 
     done
-
+    dos2unix $out_table_reg
+    python ${QC}mapstats.py $out_table_reg 'target_regions'
 fi
-				   
+		   
 ## plots mapping statistics
 dos2unix $out_table
 python ${QC}mapstats.py $out_table 'all'
 
-dos2unix $out_table_reg
-python ${QC}mapstats.py $out_table_reg 'targetregions'
+## PDF REPORT
+fof_images=${FOLDER_FLAGSTAT}imagesflagstat.fof
+ls $FOLDER_FLAGSTAT*.png > $fof_images
+python3.5 $REPORT $fof_images $FOLDER_FLAGSTAT 'mapping_statistics'
 

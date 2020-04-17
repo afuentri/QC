@@ -10,7 +10,7 @@ import seaborn as sns
 sns.set(style="whitegrid")
 
 fhand = sys.argv[1]
-out_suf = sys.arg[2]
+out_suf = sys.argv[2]
 name1 = '{}-counts.png'.format(out_suf)
 name2 ='{}-percent.png'.format(out_suf)
 path_name1 = os.path.join(os.path.dirname(fhand), name1)
@@ -27,6 +27,8 @@ a['percent_reads_mapped'] = a['percent_reads_mapped'].astype(int)
 plt.figure(figsize=(15,8))
 az = sns.barplot(x="file_name", y="count_reads_mapped", data=a)
 az.set_xticklabels(az.get_xticklabels(), rotation=90)
+az.set_ylabel('count reads mapped')
+az.set_xlabel('sample name') 
 plt.tight_layout()
 plt.savefig(path_name1)
 plt.gcf().clear()
@@ -36,6 +38,9 @@ plt.gcf().clear()
 plt.figure(figsize=(15,8))
 az = sns.barplot(x="file_name", y="percent_reads_mapped", data=a)
 az.set_xticklabels(az.get_xticklabels(), rotation=90)
+az.set_ylabel('percent reads mapped')
+az.set_xlabel('sample name')
+plt.ylim(0, 100)
 plt.tight_layout()
 plt.savefig(path_name2)
 plt.gcf().clear()
