@@ -80,7 +80,7 @@ echo "Mapping statistics to tabular format..."
 
 out_table=${FOLDER_FLAGSTAT}resume.csv
 echo "file_name,count_reads_mapped,percent_reads_mapped" > $out_table
-for i in $FOLDER_FLAGSTAT*-stats.txt; do
+for i in $(ls $FOLDER_FLAGSTAT*-stats.txt | grep -v "merged"); do
 
     l=$(cat $i | grep "mapped (")
     reads=$(echo $l | cut -f1 -d"+")
@@ -94,7 +94,7 @@ done
 if [ -f $bed ]; then
     out_table_reg=${FOLDER_FLAGSTAT}resume_targetregions.csv
     echo "file_name,count_reads_mapped,percent_reads_mapped" > $out_table_reg
-    for i in $BAMS_DIR/*sorted.bam; do
+    for i in $(ls $BAMS_DIR/*sorted.bam | grep -v "merged"); do
 
 	sname=$(basename ${i%-sorted.bam})
 	## view mapped reads in the target regions
