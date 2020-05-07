@@ -59,7 +59,7 @@ fi
 ## FOLDER TRIMMED FASTQS
 FOLDER_TRIMMED="$WORKING_DIR/trimmed/"
 
-## PATH FOR QC OUTPUT
+## PATH FOR QC OUTPUTselect 
 FOLDER_QC="$WORKING_DIR/QC/"
 
 ## PATH FOR FASTQC
@@ -80,6 +80,7 @@ PRIMERS="/srv/dev/QC/primer_QC.py"
 BARCODEPLOT="/srv/dev/QC/barcodeplot.py"
 PRIMERPLOT="/srv/dev/QC/primersplot.py"
 REPORT="/srv/dev/QC/report.py"
+PLORESUME="/srv/dev/QC/resumeplot.py"
 
 ## BARCODES
 if [ -f $adaptersLeft ] && [ -f $adaptersRight ]; then
@@ -190,6 +191,7 @@ for i in $(find $FOLDER_PREPROCESSED -name summary.txt); do
 done
 
 cat $FOLDER_PREPROCESSED$summary | cut -f1,2 | sort | uniq -c > $FOLDER_PREPROCESSED$resume
+python $PLOTRESUME $FOLDER_PREPROCESSED$resume $FOLDER_QC
 cat $FOLDER_PREPROCESSED$summary | grep "FAIL" | grep "Per base sequence quality" | cut -f3 > $FOLDER_PREPROCESSED$FAIL_BSQ
 cat $FOLDER_PREPROCESSED$summary | grep "FAIL" | grep "Per sequence quality scores" | cut -f3 > $FOLDER_PREPROCESSED$FAIL_SQS
 cat $FOLDER_PREPROCESSED$summary | grep "FAIL" | grep "Basic Statistics" | cut -f3 > $FOLDER_PREPROCESSED$FAIL_BS
@@ -255,6 +257,7 @@ for i in $(find $FOLDER_POSTPROCESSED -name summary.txt); do
 done
 
 cat $FOLDER_POSTPROCESSED$summary | cut -f1,2 | sort | uniq -c > $FOLDER_POSTPROCESSED$resume
+python $PLOTRESUME $FOLDER_POSTPROCESSED$resume $FOLDER_QC 
 cat $FOLDER_POSTPROCESSED$summary | grep "FAIL" | grep "Per base sequence quality" | cut -f3 > $FOLDER_POSTPROCESSED$FAIL_BSQ
 cat $FOLDER_POSTPROCESSED$summary | grep "FAIL" | grep "Per sequence quality scores" | cut -f3 > $FOLDER_POSTPROCESSED$FAIL_SQS
 cat $FOLDER_POSTPROCESSED$summary | grep "FAIL" | grep "Basic Statistics" | cut -f3 > $FOLDER_POSTPROCESSED$FAIL_BS
@@ -272,7 +275,7 @@ python $SCRIPT_TABLE $FOLDER_PREPROCESSED $FOLDER_POSTPROCESSED $FOLDER_QC $FOLD
 if [ -f $adapterleft ] && [ -f $adapterright ]; then
 
     echo "OK: performing barcode stats"
-    for i in $FOLDER_MERGED*f*q*; do
+    for i in $FOLDER_FASTQS*f*q*; do
 	
 	python $PRIMERS $i $adapterleft $OUT_PRIMERS
 	python $PRIMERS $i $adapterright $OUT_PRIMERS
@@ -297,7 +300,7 @@ if [ $primers==true ]; then
     if [ -f $primers5 ] && [ -f $primers3 ]; then
 
 	echo "OK: performing primer stats"
-	for i in $FOLDER_MERGED*f*q*; do
+	for i in $FOLDER_FASTQS*f*q*; do
 	    
 	    python $PRIMERS $i $primers5 $OUT_PRIMERS
 	    python $PRIMERS $i $primers3 $OUT_PRIMERS
