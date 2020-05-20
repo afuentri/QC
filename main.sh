@@ -80,7 +80,7 @@ PRIMERS="/srv/dev/QC/primer_QC.py"
 BARCODEPLOT="/srv/dev/QC/barcodeplot.py"
 PRIMERPLOT="/srv/dev/QC/primersplot.py"
 REPORT="/srv/dev/QC/report.py"
-PLORESUME="/srv/dev/QC/resumeplot.py"
+PLOTRESUME="/srv/dev/QC/resumeplot.py"
 
 ## BARCODES
 if [ -f $adaptersLeft ] && [ -f $adaptersRight ]; then
