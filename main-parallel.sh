@@ -7,7 +7,7 @@
 ## PARSE ARGUMENTS
 primers=false
 
-while getopts hp:b:: option
+while getopts hp:t:b:: option
 do
     case "${option}"
     in
@@ -18,11 +18,13 @@ do
         echo "  bash main.sh -p $working_dir -p primers"
         echo "                                                                     "
         echo "This script performs an initial QC analysis for raw fastqs"
-        echo "and trimmed fastqs sequenced with Illumina Miseq. The input required is: "
+        echo "and trimmed fastqs sequenced with Illumina Miseq. Keep parallel LOG files to continue an unfinished process, elsewhere remove the whole unfinished QC folder"
+	echo "The input required is:"
         echo "                                                                     "
         echo "Options:"
         echo "  -h: display this help message"
         echo "  -p: working dir (absolut path without final slash)"
+	echo "  -t: numberof processes"
 	echo "  -b: (optional) evaluate trimming of primers (folder with FASTA files with primer sequences to evaluate)"
 	echo "  Evaluation of Nextera barcodes will be performed always"
 	echo "  FASTA files in folder must be named and sepparated in the following way:"
@@ -37,6 +39,8 @@ do
         ;;
         p) wd=${OPTARG}
         ;;
+	t) proc=${OPTARG}
+	;;
 	b) primers=${OPTARG}
         ;;
        
@@ -86,6 +90,7 @@ PLOTRESUME="/srv/dev/QC/resumeplot.py"
 if [ -f $adaptersRight ]; then
     
     adapter=$adaptersRight
+    
 else
     echo "Fatal error, can not find environment variables for adapters"
 fi
@@ -120,22 +125,39 @@ mkdir $OUT_PRIMERS
 # Read counts
 
 pre_counts="pre-triming_counts.txt"
+CMD_pre_counts="CMD_pre-trimingcount.cmd"
+LOG_pre_counts="LOG_pre-trimingcount.log"
 
 for i in $FOLDER_FASTQS*.f*q*; do
     
-    echo $i
-    zcat $i | echo $((`wc -l`/4))
+    echo "echo $i; n=\$(zcat $i | wc -l); echo \$((n/4)) >> $FOLDER_QC$pre_counts"
     
-done >> $FOLDER_QC$pre_counts
+done > $FOLDER_QC$CMD_pre_counts
+
+if [ ! -f $FOLDER_QC$LOG_pre_counts ]; then
+    parallel --joblog $FOLDER_QC$LOG_pre_counts -j$proc :::: $FOLDER_QC$CMD_pre_counts 
+else
+    parallel --resume-failed --joblog $FOLDER_QC$LOG_pre_counts -j$proc :::: $FOLDER_QC$CMD_pre_counts
+
+fi
 
 post_counts="post-triming_counts.txt"
+CMD_post_counts="CMD_post-trimingcount.cmd"
+LOG_post_counts="LOG_post-trimingcount.log"
 
-for i in $FOLDER_TRIMMED*.f*q*; do
+for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
 
-    echo $i
-    zcat $i | echo $((`wc -l`/4))
+    echo "echo $i; n=\$(zcat $i | wc -l); echo \$((n/4)) >> $FOLDER_QC$post_counts"
 
-done >> $FOLDER_QC$post_counts
+done > $FOLDER_QC$CMD_post_counts
+
+if [ ! -f $FOLDER_QC$LOG_post_counts ]; then
+    parallel --joblog $FOLDER_QC$LOG_post_counts -j$proc :::: $FOLDER_QC$CMD_post_counts
+else
+    parallel --resume-failed --joblog $FOLDER_QC$LOG_post_counts -j$proc :::: $FOLDER_QC$CMD_post_counts
+
+fi
+
 
 ## FASTQC PREPROCESSED
 echo "Using FASTQC:  "
@@ -152,7 +174,14 @@ for i in $FOLDER_FASTQS*.f*q*; do
 
 done > $FOLDER_PREPROCESSED$cmd
 
-cat $FOLDER_PREPROCESSED$cmd | parallel --joblog $FOLDER_PREPROCESSED$log -j10
+if [ ! -f $FOLDER_PREPROCESSED$log ]; then
+    
+    parallel --joblog $FOLDER_PREPROCESSED$log -j$proc :::: $FOLDER_PREPROCESSED$cmd
+else
+    
+    parallel --resume-failed --joblog $FOLDER_PREPROCESSED$log -j$proc :::: $FOLDER_PREPROCESSED$cmd
+fi
+
 
 ### EXTRACTING FOLDERS
 for i in $FOLDER_PREPROCESSED*.zip; do
@@ -217,8 +246,11 @@ for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
 
 done > $FOLDER_POSTPROCESSED$cmd
 
-cat $FOLDER_POSTPROCESSED$cmd | parallel --joblog $FOLDER_POSTPROCESSED$log -j10
-
+if [ ! -f $FOLDER_POSTPROCESSED$log ]; then
+    parallel --joblog $FOLDER_POSTPROCESSED$log -j$proc :::: $FOLDER_POSTPROCESSED$cmd
+else
+    parallel --resume-failed --joblog $FOLDER_POSTPROCESSED$log -j$proc :::: $FOLDER_POSTPROCESSED$cmd
+fi
 
 ### EXTRACTING FOLDERS
 for i in $FOLDER_POSTPROCESSED*.zip; do
@@ -274,20 +306,26 @@ python $SCRIPT_TABLE $FOLDER_PREPROCESSED $FOLDER_POSTPROCESSED $FOLDER_QC $FOLD
 ## BARCODE AND PRIMERS QC
 ## BARCODES (mandatory)
 
+cmd_rawbarcodes="CMD_rawbarcodes.cmd"
+log_rawbarcodes="LOG_rawbarcodes.log"
+cmd_trimbarcodes="CMD_trimbarcodes.cmd"
+log_trimbarcodes="LOG_trimbarcodes.log"
+
 if [ -f $adapter ]; then
 
     echo "OK: performing barcode stats"
     for i in $FOLDER_FASTQS*f*q*; do
 	
-	python $PRIMERS $i $adapter $OUT_PRIMERS
+	echo "python $PRIMERS $i $adapter $OUT_PRIMERS"
 
-    done
+    done > $OUT_PRIMERS$cmd_rawbarcodes
 
+    
     for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
 
-	python $PRIMERS $i $adapter $OUT_PRIMERS
+	echo "python $PRIMERS $i $adapter $OUT_PRIMERS"
 	
-    done
+    done > $OUT_PRIMERS$cmd_trimbarcodes
 	
     
 else
@@ -295,26 +333,61 @@ else
 
 fi
 
+if [ ! -f $OUT_PRIMERS$log_rawbarcodes ]; then
+
+    parallel --joblog $OUT_PRIMERS$log_rawbarcodes -j$proc :::: $OUT_PRIMERS$cmd_rawbarcodes
+else
+    parallel --resume-failed --joblog $OUT_PRIMERS$log_rawbarcodes -j$proc :::: $OUT_PRIMERS$cmd_rawbarcodes
+fi
+
+if [ ! -f $OUT_PRIMERS$log_trimbarcodes ]; then
+    parallel --joblog $OUT_PRIMERS$log_trimbarcodes -j$proc :::: $OUT_PRIMERS$cmd_trimbarcodes
+else
+    parallel --resume-failed --joblog $OUT_PRIMERS$log_trimbarcodes -j$proc :::: $OUT_PRIMERS$cmd_trimbarcodes
+fi
+
+
 ## PRIMERS (OPTIONAL)
 if [ $primers==true ]; then
 
     if [ -f $primers5 ] && [ -f $primers3 ]; then
 
+	cmd_rawprimers="CMD_rawprimers.cmd"
+	log_rawprimers="LOG_rawprimers.log"
+	cmd_trimprimers="CMD_trimprimers.cmd"
+	log_trimprimers="LOG_trimprimers.log"
+	
 	echo "OK: performing primer stats"
 	for i in $FOLDER_FASTQS*f*q*; do
 	    
-	    python $PRIMERS $i $primers5 $OUT_PRIMERS
-	    python $PRIMERS $i $primers3 $OUT_PRIMERS
-	done
+	    echo "python $PRIMERS $i $primers5 $OUT_PRIMERS"
+	    echo "python $PRIMERS $i $primers3 $OUT_PRIMERS"
+
+	done > $OUT_PRIMERS$cmd_rawprimers
 
 	for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
-	    python $PRIMERS $i $primers5 $OUT_PRIMERS
-	    python $PRIMERS $i $primers3 $OUT_PRIMERS
-	done
+
+	    echo "python $PRIMERS $i $primers5 $OUT_PRIMERS"
+	    echo "python $PRIMERS $i $primers3 $OUT_PRIMERS"
+	    
+	done > $OUT_PRIMERS$cmd_trimprimers
+
+	if [ ! -j $OUT_PRIMERS$log_rawprimers ]; then
+	    parallel --joblog $OUT_PRIMERS$log_rawprimers -j$proc :::: $OUT_PRIMERS$cmd_rawprimers
+	else
+	    parallel --resume-failed --joblog $OUT_PRIMERS$log_rawprimers -j$proc :::: $OUT_PRIMERS$cmd_rawprimers
+	fi
+
+	if [ ! -j $OUT_PRIMERS$log_trimprimers ]; then
+	    parallel --joblog $OUT_PRIMERS$log_trimprimers -j$proc :::: $OUT_PRIMERS$cmd_trimprimers
+	else
+	    parallel --resume-failed --joblog $OUT_PRIMERS$log_trimprimers -j$proc :::: $OUT_PRIMERS$cmd_trimprimers
+	fi
 	
     else
 	echo "Primers QC option was selected but there are no primer files inside folder indicated"
     fi
+    
 
 fi
 
