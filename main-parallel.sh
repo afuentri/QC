@@ -372,13 +372,13 @@ if [ $primers==true ]; then
 	    
 	done > $OUT_PRIMERS$cmd_trimprimers
 
-	if [ ! -j $OUT_PRIMERS$log_rawprimers ]; then
+	if [ ! -f $OUT_PRIMERS$log_rawprimers ]; then
 	    parallel --joblog $OUT_PRIMERS$log_rawprimers -j$proc :::: $OUT_PRIMERS$cmd_rawprimers
 	else
 	    parallel --resume-failed --joblog $OUT_PRIMERS$log_rawprimers -j$proc :::: $OUT_PRIMERS$cmd_rawprimers
 	fi
 
-	if [ ! -j $OUT_PRIMERS$log_trimprimers ]; then
+	if [ ! -f $OUT_PRIMERS$log_trimprimers ]; then
 	    parallel --joblog $OUT_PRIMERS$log_trimprimers -j$proc :::: $OUT_PRIMERS$cmd_trimprimers
 	else
 	    parallel --resume-failed --joblog $OUT_PRIMERS$log_trimprimers -j$proc :::: $OUT_PRIMERS$cmd_trimprimers
