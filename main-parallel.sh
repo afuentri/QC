@@ -125,7 +125,7 @@ mkdir $OUT_PRIMERS
 # Read counts
 
 pre_counts="pre-triming_counts.txt"
-#CMD_pre_counts="CMD_pre-trimingcount.cmd"
+CMD_pre_counts="CMD_pre-trimingcount.cmd"
 #LOG_pre_counts="LOG_pre-trimingcount.log"
 
 for i in $FOLDER_FASTQS*.f*q*; do
@@ -138,7 +138,7 @@ touch $FOLDER_QC$pre_counts
 sh $FOLDER_QC$CMD_pre_counts 
 
 post_counts="post-triming_counts.txt"
-#CMD_post_counts="CMD_post-trimingcount.cmd"
+CMD_post_counts="CMD_post-trimingcount.cmd"
 #LOG_post_counts="LOG_post-trimingcount.log"
 
 for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
