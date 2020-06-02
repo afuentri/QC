@@ -326,8 +326,8 @@ fof_barcodestrimmed="${OUT_PRIMERS}barcodestrimmed.fof"
 ls $OUT_PRIMERS*_adapter_nextera.csv | grep -v "trimmed" > $fof_barcodesraw
 ls $OUT_PRIMERS*-trimmed_adapter_nextera.csv > $fof_barcodestrimmed
 
-python $BARCODEPLOT $fof_barcodesraw $OUT_PRIMERS
-python $BARCODEPLOT $fof_barcodestrimmed $OUT_PRIMERS
+python $BARCODEPLOT $fof_barcodesraw $FOLDER_QC$pre_counts $OUT_PRIMERS
+python $BARCODEPLOT $fof_barcodestrimmed $FOLDER_QC$post_counts $OUT_PRIMERS
 
 ## FOR PRIMERS
 if [ $primers==true ]; then
@@ -344,10 +344,10 @@ if [ $primers==true ]; then
 	ls $OUT_PRIMERS*-trimmed_primers_3.csv > $fof_primers3trimmed
 	ls $OUT_PRIMERS*-trimmed_primers_5.csv > $fof_primers5trimmed
 
-	python $PRIMERPLOT $fof_primers3raw $OUT_PRIMERS
-	python $PRIMERPLOT $fof_primers5raw $OUT_PRIMERS
-	python $PRIMERPLOT $fof_primers3trimmed $OUT_PRIMERS
-	python $PRIMERPLOT $fof_primers5trimmed $OUT_PRIMERS
+	python $PRIMERPLOT $fof_primers3raw $FOLDER_QC$pre_counts $OUT_PRIMERS
+	python $PRIMERPLOT $fof_primers5raw $FOLDER_QC$pre_counts $OUT_PRIMERS
+	python $PRIMERPLOT $fof_primers3trimmed $FOLDER_QC$post_counts $OUT_PRIMERS
+	python $PRIMERPLOT $fof_primers5trimmed $FOLDER_QC$post_counts $OUT_PRIMERS
 
     else
 	echo "Primers QC option was selected but there are no primer files inside folder indicated"

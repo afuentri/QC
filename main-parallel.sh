@@ -125,39 +125,30 @@ mkdir $OUT_PRIMERS
 # Read counts
 
 pre_counts="pre-triming_counts.txt"
-CMD_pre_counts="CMD_pre-trimingcount.cmd"
-LOG_pre_counts="LOG_pre-trimingcount.log"
+#CMD_pre_counts="CMD_pre-trimingcount.cmd"
+#LOG_pre_counts="LOG_pre-trimingcount.log"
 
 for i in $FOLDER_FASTQS*.f*q*; do
     
-    echo "echo $i; n=\$(zcat $i | wc -l); echo \$((n/4)) >> $FOLDER_QC$pre_counts"
+    echo "echo $i >> $FOLDER_QC$pre_counts; n=\$(zcat $i | wc -l); echo \$((n/4)) >> $FOLDER_QC$pre_counts"
     
 done > $FOLDER_QC$CMD_pre_counts
 
-if [ ! -f $FOLDER_QC$LOG_pre_counts ]; then
-    parallel --joblog $FOLDER_QC$LOG_pre_counts -j$proc :::: $FOLDER_QC$CMD_pre_counts 
-else
-    parallel --resume-failed --joblog $FOLDER_QC$LOG_pre_counts -j$proc :::: $FOLDER_QC$CMD_pre_counts
-
-fi
+touch $FOLDER_QC$pre_counts
+sh $FOLDER_QC$CMD_pre_counts 
 
 post_counts="post-triming_counts.txt"
-CMD_post_counts="CMD_post-trimingcount.cmd"
-LOG_post_counts="LOG_post-trimingcount.log"
+#CMD_post_counts="CMD_post-trimingcount.cmd"
+#LOG_post_counts="LOG_post-trimingcount.log"
 
 for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
 
-    echo "echo $i; n=\$(zcat $i | wc -l); echo \$((n/4)) >> $FOLDER_QC$post_counts"
+    echo "echo $i >> $FOLDER_QC$post_counts; n=\$(zcat $i | wc -l); echo \$((n/4)) >> $FOLDER_QC$post_counts"
 
 done > $FOLDER_QC$CMD_post_counts
 
-if [ ! -f $FOLDER_QC$LOG_post_counts ]; then
-    parallel --joblog $FOLDER_QC$LOG_post_counts -j$proc :::: $FOLDER_QC$CMD_post_counts
-else
-    parallel --resume-failed --joblog $FOLDER_QC$LOG_post_counts -j$proc :::: $FOLDER_QC$CMD_post_counts
-
-fi
-
+touch $FOLDER_QC$post_counts
+sh $FOLDER_QC$CMD_post_counts
 
 ## FASTQC PREPROCESSED
 echo "Using FASTQC:  "
@@ -315,14 +306,14 @@ if [ -f $adapter ]; then
 
     echo "OK: performing barcode stats"
     for i in $FOLDER_FASTQS*f*q*; do
-	
+
 	echo "python $PRIMERS $i $adapter $OUT_PRIMERS"
 
     done > $OUT_PRIMERS$cmd_rawbarcodes
 
     
     for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
-
+	
 	echo "python $PRIMERS $i $adapter $OUT_PRIMERS"
 	
     done > $OUT_PRIMERS$cmd_trimbarcodes
@@ -359,6 +350,8 @@ if [ $primers==true ]; then
 	
 	echo "OK: performing primer stats"
 	for i in $FOLDER_FASTQS*f*q*; do
+
+	    #treads=$(grep -A1 ${i%_S*}_  $FOLDER_QC$pre_counts | head -n2 | tail -n +2)
 	    
 	    echo "python $PRIMERS $i $primers5 $OUT_PRIMERS"
 	    echo "python $PRIMERS $i $primers3 $OUT_PRIMERS"
@@ -399,8 +392,8 @@ fof_barcodestrimmed="${OUT_PRIMERS}barcodestrimmed.fof"
 ls $OUT_PRIMERS*_adapter_nextera.csv | grep -v "trimmed" > $fof_barcodesraw
 ls $OUT_PRIMERS*-trimmed_adapter_nextera.csv > $fof_barcodestrimmed
 
-python $BARCODEPLOT $fof_barcodesraw $OUT_PRIMERS
-python $BARCODEPLOT $fof_barcodestrimmed $OUT_PRIMERS
+python $BARCODEPLOT $fof_barcodesraw $FOLDER_QC$pre_counts $OUT_PRIMERS
+python $BARCODEPLOT $fof_barcodestrimmed $FOLDER_QC$post_counts $OUT_PRIMERS
 
 ## FOR PRIMERS
 if [ $primers==true ]; then
@@ -417,10 +410,10 @@ if [ $primers==true ]; then
 	ls $OUT_PRIMERS*-trimmed_primers_3.csv > $fof_primers3trimmed
 	ls $OUT_PRIMERS*-trimmed_primers_5.csv > $fof_primers5trimmed
 
-	python $PRIMERPLOT $fof_primers3raw $OUT_PRIMERS
-	python $PRIMERPLOT $fof_primers5raw $OUT_PRIMERS
-	python $PRIMERPLOT $fof_primers3trimmed $OUT_PRIMERS
-	python $PRIMERPLOT $fof_primers5trimmed $OUT_PRIMERS
+	python $PRIMERPLOT $fof_primers3raw $FOLDER_QC$pre_counts $OUT_PRIMERS
+	python $PRIMERPLOT $fof_primers5raw $FOLDER_QC$pre_counts $OUT_PRIMERS
+	python $PRIMERPLOT $fof_primers3trimmed $FOLDER_QC$post_counts $OUT_PRIMERS
+	python $PRIMERPLOT $fof_primers5trimmed $FOLDER_QC$post_counts $OUT_PRIMERS
 
     else
 	echo "Primers QC option was selected but there are no primer files inside folder indicated"
