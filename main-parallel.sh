@@ -79,13 +79,13 @@ FOLDER_POSTPROCESSED="$WORKING_DIR/QC/fastqc/postprocessed/"
 OUT_PRIMERS="$WORKING_DIR/QC/primers/"
 
 ## PATH FOR QC SCRIPTS
-SCRIPT_TABLE="/srv/dev/QC/fastQC_table.py"
-PRIMERS="/srv/dev/QC/primer_QC.py"
-BARCODEPLOT="/srv/dev/QC/barcodeplot.py"
-PRIMERPLOT="/srv/dev/QC/primersplot.py"
-REPORT="/srv/dev/QC/report.py"
-PLOTRESUME="/srv/dev/QC/resumeplot.py"
-plotquality="/srv/dev/QC/basequality.py"
+SCRIPT_TABLE="$scripts_repo/QC/fastQC_table.py"
+PRIMERS="$scripts_repo/QC/primer_QC.py"
+BARCODEPLOT="$scripts_repo/QC/barcodeplot.py"
+PRIMERPLOT="$scripts_repo/QC/primersplot.py"
+REPORT="$scripts_repo/QC/report.py"
+PLOTRESUME="$scripts_repo/QC/resumeplot.py"
+plotquality="$scripts_repo/QC/basequality.py"
 
 ## BARCODES
 if [ -f $adaptersRight ]; then
