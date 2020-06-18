@@ -85,6 +85,7 @@ BARCODEPLOT="/srv/dev/QC/barcodeplot.py"
 PRIMERPLOT="/srv/dev/QC/primersplot.py"
 REPORT="/srv/dev/QC/report.py"
 PLOTRESUME="/srv/dev/QC/resumeplot.py"
+plotquality="/srv/dev/QC/basequality.py"
 
 ## BARCODES
 if [ -f $adaptersRight ]; then
@@ -293,6 +294,11 @@ python $PLOTRESUME $FOLDER_POSTPROCESSED$resume $FOLDER_QC
 
 ## TABLE GENERATION
 python $SCRIPT_TABLE $FOLDER_PREPROCESSED $FOLDER_POSTPROCESSED $FOLDER_QC $FOLDER_FASTQS
+
+## PLOT BASEQUALITY
+find $FOLDER_PREPROCESSED -name "fastqc_data.txt" > "${FOLDER_QC}pretrimming.fof"
+find $FOLDER_POSTPROCESSED -name "fastqc_data.txt" > "${FOLDER_QC}posttrimming.fof"
+python3.5 $plotquality "${FOLDER_QC}pretrimming.fof" "${FOLDER_QC}posttrimming.fof"
 
 ## BARCODE AND PRIMERS QC
 ## BARCODES (mandatory)
