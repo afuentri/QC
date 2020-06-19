@@ -298,7 +298,7 @@ python $SCRIPT_TABLE $FOLDER_PREPROCESSED $FOLDER_POSTPROCESSED $FOLDER_QC $FOLD
 ## PLOT BASEQUALITY
 find $FOLDER_PREPROCESSED -name "fastqc_data.txt" > "${FOLDER_QC}pretrimming.fof"
 find $FOLDER_POSTPROCESSED -name "fastqc_data.txt" > "${FOLDER_QC}posttrimming.fof"
-python3.5 $plotquality "${FOLDER_QC}pretrimming.fof" "${FOLDER_QC}posttrimming.fof"
+python3.5 $plotquality "${FOLDER_QC}pretrimming.fof" "${FOLDER_QC}posttrimming.fof" $FOLDER_QC
 
 ## BARCODE AND PRIMERS QC
 ## BARCODES (mandatory)
