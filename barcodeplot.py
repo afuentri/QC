@@ -35,7 +35,9 @@ with open(fof, 'r') as ffof:
     for line in ffof:
         line = line.strip()
         sample_name = os.path.basename(line).split('_')[0]
-        CMD = 'grep -A1 {} {} | head -n2 | tail -n +2'.format(sample_name, count)
+        sname = '/{}_'.format(sample_name)
+        CMD = 'grep -A1 {} {} | head -n2 | tail -n +2'.format(sname, count)
+        print(CMD)
         proc = subprocess.Popen(CMD, shell=True, stdout=subprocess.PIPE)
         total_reads = int(proc.communicate()[0].replace('\n', ''))
         print(sample_name, total_reads)
@@ -46,15 +48,15 @@ with open(fof, 'r') as ffof:
                          names=['adapter','revcomp_right','right','revcomp_left', 'left'])
         
         df.index = [sample_name]
-        print(df)
+        print(df.head())
         
-        df2 = df
-
+        df2 = df.copy()
+        
         df2['revcomp_right'] = df2['revcomp_right']/total_reads
         df2['right'] = df2['right']/total_reads
         df2['revcomp_left'] = df2['revcomp_left']/total_reads
         df2['left'] = df2['left']/total_reads
-        print(df2)
+        print(df2.head())
         if bigdf.empty:
             bigdf = df
         else:
@@ -67,7 +69,7 @@ with open(fof, 'r') as ffof:
 
 pltdf = bigdf.groupby(level=0).sum().reset_index()
 pltdf = pltdf.set_index('index')
-print(pltdf)
+print(pltdf.head())
 
 pltdfperc = bigdfperc.groupby(level=0).sum().reset_index()
 pltdfperc = pltdfperc.set_index('index')

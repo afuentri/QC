@@ -43,7 +43,7 @@ with open(fof, 'r') as ffof:
         df2 = df[['primer', 'total']].pivot_table(columns='primer', values='total')
         df2.index = [sample_name]
         print(df2)
-        df3 = df2
+        df3 = df2.copy()
         df3 = df3/total_reads
         print(df3)
         
