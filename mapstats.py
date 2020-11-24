@@ -26,7 +26,10 @@ a['percent_reads_mapped'] = a['percent_reads_mapped'].astype(int)
 # size a4 paper
 plt.figure(figsize=(15,8))
 az = sns.barplot(x="file_name", y="count_reads_mapped", data=a)
-az.set_xticklabels(az.get_xticklabels(), rotation=90)
+
+labels = [str(item.get_text()) for item in az.get_xticklabels()]
+
+az.set_xticklabels(labels, rotation=90)
 az.set_ylabel('count reads mapped')
 az.set_xlabel('sample name') 
 plt.tight_layout()
@@ -37,7 +40,10 @@ plt.gcf().clear()
 # size a4 paper
 plt.figure(figsize=(15,8))
 az = sns.barplot(x="file_name", y="percent_reads_mapped", data=a)
-az.set_xticklabels(az.get_xticklabels(), rotation=90)
+
+labels = [str(item.get_text()) for item in az.get_xticklabels()]
+
+az.set_xticklabels(labels, rotation=90)
 az.set_ylabel('percent reads mapped')
 az.set_xlabel('sample name')
 plt.ylim(0, 100)
