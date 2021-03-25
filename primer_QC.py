@@ -7,7 +7,8 @@ import os
 
 def revcomp(seq):
     """Sequence to reverse complementary"""
-    revcomp = ''.join([{'A':'T', 'C':'G', 'G':'C', 'T':'A', 'a':'T', 'c':'G', 'g':'C', 't':'A', 'n':'N', 'N':'N'}[B] for B in seq][::-1])
+    revcomp = ''.join([{'A':'T', 'C':'G', 'G':'C', 'T':'A', 'a':'T',
+                        'c':'G', 'g':'C', 't':'A', 'n':'N', 'N':'N'}[B] for B in seq][::-1])
 
     return revcomp
 
@@ -33,12 +34,12 @@ fprimers.close()
 print(dprimers)
 
 with gzip.open(f, 'rb') as OPEN_FILE:
-    fhand = OPEN_FILE.read()
+    fhand = OPEN_FILE.read().decode('utf-8')
 
 dcounts = {}
 for e in dprimers:
     seq = dprimers[e]
-    print(e)
+    print(seq)
     dcounts[e] = {}
     
     ## ori left

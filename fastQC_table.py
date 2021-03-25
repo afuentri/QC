@@ -40,9 +40,9 @@ out = os.path.join(out_path, 'fastq_stats.xlsx')
 try:
     workbook = xlsxwriter.Workbook(out)
 except IOError as e:
-    print "I/O error({0}): {1}".format(e.errno, e.strerror)
+    print("I/O error({0}): {1}".format(e.errno, e.strerror))
 except:
-    print "Unexpected error:", sys.exc_info()[0]
+    print("Unexpected error:", sys.exc_info()[0])
     raise
 else:
     worksheet = workbook.add_worksheet()
@@ -95,7 +95,7 @@ for i in range(0,len(inf),11):
             text[l + 3] = text[l + 3].strip()
             nombre2 = text[l + 3].split('\t')[1]
             if nombre2 == trimmed_name:
-                print 'Found pair %s' %nombre2
+                print('Found pair %s' %nombre2)
                 text[l + 6] = text[l + 6].strip()
                 text[l + 7] = text[l + 7].strip()
                 d['numero_lecturas_trim'] = text[l + 6].split('\t')[1] 

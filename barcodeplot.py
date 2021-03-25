@@ -14,7 +14,7 @@ sns.set(style="whitegrid")
 import matplotlib.pyplot as plt
 
 fof = sys.argv[1]
-count=sys.argv[2]
+count = sys.argv[2]
 outf = sys.argv[3]
 
 def execute(CMD):
@@ -39,7 +39,7 @@ with open(fof, 'r') as ffof:
         CMD = 'grep -A1 {} {} | head -n2 | tail -n +2'.format(sname, count)
         print(CMD)
         proc = subprocess.Popen(CMD, shell=True, stdout=subprocess.PIPE)
-        total_reads = int(proc.communicate()[0].replace('\n', ''))
+        total_reads = int(proc.communicate()[0].replace(b'\n', b''))
         print(sample_name, total_reads)
                         
 
