@@ -114,5 +114,5 @@ python ${QC}mapstats.py $out_table 'all'
 ## PDF REPORT
 fof_images=${FOLDER_FLAGSTAT}imagesflagstat.fof
 ls $FOLDER_FLAGSTAT*.png > $fof_images
-python3.5 $REPORT $fof_images $FOLDER_FLAGSTAT 'mapping_statistics'
+python $REPORT $fof_images $FOLDER_FLAGSTAT 'mapping_statistics'
 
