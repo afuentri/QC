@@ -49,6 +49,7 @@ FOLDER_FLAGSTAT="$BAMS_DIR/flagstat/"
 ## SCRIPTS REPO
 QC="$scripts_repo/QC/"
 REPORT="${QC}report.py"
+MAPPEDCHROMOSOME="${QC}plotmapped_chr.py"
 
 ## Echoes
 echo "WORKING DIRECTORY: $BAMS_DIR"
@@ -113,6 +114,17 @@ python ${QC}mapstats.py $out_table 'all'
 
 ## PDF REPORT
 fof_images=${FOLDER_FLAGSTAT}imagesflagstat.fof
+
 ls $FOLDER_FLAGSTAT*.png > $fof_images
 python $REPORT $fof_images $FOLDER_FLAGSTAT 'mapping_statistics'
 
+## plots mapped per chromosome
+for i in $BAMS_DIR/*sorted.bam; do
+    t=$(samtools view $i | wc -l)
+    samtools view -F4 $i| cut -f3 | sort | uniq -c | sed 's/^ *//g' | sed 's/ /,/g'> ${i%-sorted.bam}-${t}_counts.tsv
+    n=$(cat ${i%-sorted.bam}-${t}_counts.tsv | wc -l)
+    paste -d"," <(for f in $(seq 1 $n); do l=$(basename "${i%_S*}"); echo "$l,$t" | xargs -n1 ; done) ${i%-sorted.bam}-${t}_counts.tsv
+
+done > $BAMS_DIR/table_counts_mapped.csv
+
+python $MAPPEDCHROMOSOME $BAMS_DIR/table_counts_mapped.csv $FOLDER_FLAGSTAT
