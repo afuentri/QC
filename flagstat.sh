@@ -116,7 +116,7 @@ python ${QC}mapstats.py $out_table 'all'
 fof_images=${FOLDER_FLAGSTAT}imagesflagstat.fof
 
 ls $FOLDER_FLAGSTAT*.png > $fof_images
-python $REPORT $fof_images $FOLDER_FLAGSTAT 'mapping_statistics'
+python3 $REPORT $fof_images $FOLDER_FLAGSTAT 'mapping_statistics'
 
 ## plots mapped per chromosome
 for i in $BAMS_DIR/*sorted.bam; do
