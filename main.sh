@@ -364,4 +364,4 @@ fi
 ## PDF REPORT
 fof_images="${OUT_PRIMERS}images.fof"
 ls $OUT_PRIMERS*.png > $fof_images
-python $REPORT $fof_images $OUT_PRIMERS 'barcode-primers_report'
+python3 $REPORT $fof_images $OUT_PRIMERS 'barcode-primers_report'
