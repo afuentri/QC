@@ -31,22 +31,21 @@ with open(fof, 'r') as ffof:
 
         CMD = 'grep -A1 {} {} | head -n2 | tail -n +2'.format(sample_name, count)
         proc = subprocess.Popen(CMD, shell=True, stdout=subprocess.PIPE)
-        total_reads = int(proc.communicate()[0].replace('\n', ''))
-        print(sample_name, total_reads)
+        total_reads = int(proc.communicate()[0].replace(b'\n', b''))
 
         ## extract total number of reads
         df = pd.read_csv(line, sep=',', header=0,
-                         names=['primer','revcomp_right','right','revcomp_left', 'left'])
+                         names=['primer', 'revcomp_right', 'right',
+                                'revcomp_left', 'left'])
 
         df['total'] = df.sum(axis=1)
         
         df2 = df[['primer', 'total']].pivot_table(columns='primer', values='total')
         df2.index = [sample_name]
-        print(df2)
+        
         df3 = df2.copy()
         df3 = df3/total_reads
-        print(df3)
-        
+                
         if bigdf.empty:
             bigdf = df2
         else:
@@ -59,7 +58,6 @@ with open(fof, 'r') as ffof:
             
 pltdf = bigdf.groupby(level=0).sum().reset_index()
 pltdf = pltdf.set_index('index')
-print(pltdf)
 
 pltdfperc = bigdfperc.groupby(level=0).sum().reset_index()
 pltdfperc = pltdfperc.set_index('index')
