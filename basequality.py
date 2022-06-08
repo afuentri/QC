@@ -43,9 +43,10 @@ postfof = sys.argv[2]
 out = sys.argv[3]
 
 ## initialize matplotlib
-sns.set_style('white')
+#sns.set_style('white')
 sns.set_style('ticks')
 sns.set_context('notebook')
+sns.set(font_scale=2)
 tt = 'Mean base quality per sample'
 plotn = os.path.join(out, 'meanseqqual_sample.png')
 
@@ -72,7 +73,7 @@ with open(prefof, 'r') as fpre:
             df['qual'] = df['qual'].astype(float)
             df['base'] = df['base'].astype(int)
             df = df.sort_values('base')
-            ax1.plot(df['base'], df['qual'], color='green', lw=1)
+            ax1.plot(df['base'], df['qual'], color='#74c2b4', lw=1.6)
 
 with open(postfof, 'r') as fpost:
 
@@ -80,7 +81,6 @@ with open(postfof, 'r') as fpost:
     for t in fo:
         if fo != '':
             dqual = calcQual(t)
-
             ## dictionary to dataframe
             df = pd.DataFrame.from_dict(dqual, orient='index', columns=['qual']).reset_index().dropna()
             df.columns = ['base', 'qual']
@@ -89,15 +89,15 @@ with open(postfof, 'r') as fpost:
             df = df.sort_values('base')
             if sum(df['base'] > 140) == 0:
                 print(df)
-            ax2.plot(df['base'], df['qual'], color='green', lw=1)
+            ax2.plot(df['base'], df['qual'], color='#ed728a', lw=1.6)
     
 
 ax1.set_title('Pretrimming')
 ax2.set_title('Postrimming')
-ax1.set_xlabel('Base position')
-ax2.set_xlabel('Base position')
-ax1.set_ylabel('Quality')
-ax2.set_ylabel('Quality')
+ax1.set_xlabel('Base position in read')
+ax2.set_xlabel('Base position in read')
+ax1.set_ylabel('Quality score')
+ax2.set_ylabel('Quality score')
 
 fig.suptitle(tt)
 #plt.tight_layout()
