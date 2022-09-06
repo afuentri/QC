@@ -64,22 +64,24 @@ pltdfperc = pltdfperc.set_index('index')
 
 ## plot stacked counts
 sns.set_style("white")
+sns.set(font_scale=2)
 pltdf.plot(kind='bar', stacked=True, figsize=(15,8),
             title="Primers count on each sample")
 plt.legend(loc='best', mode='expand', fontsize=9, ncol=7)
 plt.xticks(rotation=90)
 plt.ylabel('counts')
 plt.tight_layout()
-plt.savefig(plotname)
+plt.savefig(plotname, dpi=500)
 plt.gcf().clear()
 
 ## plot stacked percent
 sns.set_style("white")
+sns.set(font_scale=2)
 pltdfperc.plot(kind='bar', stacked=True, figsize=(15,8),
             title="Primers percentage on each sample")
 plt.legend(loc='best', mode='expand', fontsize=9, ncol=7)
 plt.xticks(rotation=90)
 plt.ylabel('frequency')
 plt.tight_layout()
-plt.savefig(plotname2)
+plt.savefig(plotname2, dpi=500)
 plt.gcf().clear()
