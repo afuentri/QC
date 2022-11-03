@@ -15,14 +15,16 @@ do
 
         echo "                                                                     "
         echo "-USE"
-        echo "  bash main.sh -p working_dir [-b primers]"
+        echo "  bash main.sh -p output_dir -f fastqs_rawfolder -t fastqs_trimmedfolder [-b primers]"
         echo "                                                                     "
         echo "This script performs an initial QC analysis for raw fastqs"
         echo "and trimmed fastqs sequenced with Illumina. The input required is: "
         echo "                                                                     "
         echo "Options:"
         echo "  -h: display this help message"
-        echo "  -p: working dir (absolute path)"
+        echo "  -p: output dir (absolute path)"
+	echo "  -f: Folder with RAW FASTQ files inside"
+	echo "  -t: Folder with trimmed FASTQ files inside"
 	echo "  -b: (optional) evaluate trimming of primers (folder with FASTA files with primer sequences to evaluate)"
 	echo "  Evaluation of Nextera and Truseq ADAPTER sequences will be performed always"
 	echo "  FASTA files in folder must be named and sepparated in the following way:"
@@ -37,27 +39,36 @@ do
         ;;
         p) wd=${OPTARG}
         ;;
+	f) ff=${OPTARG}
+	;;
+	t) ft=${OPTARG}
+	;;
 	b) primers=${OPTARG}
         ;;
        
     esac
 done
 
-## Run date must be inserted in format YYMMDD RUNXXX
+## OUTPUT DIR and DATA DIRS
 WORKING_DIR="$wd"
-
+FOLDER_FASTQS="$ff"
+FOLDER_TRIMMED="$ft"
+scripts_repo=$(dirname "$0")
+## we will have to include the following code in the specific
+## pipelines scripts to autodetect which folders to use as we did before
+## but it is a bit difficult to run it in pipeline-independent mode that way
 ## PATH FOR FASTQS
-FOLDER_MERGEDBC="$WORKING_DIR/merged_withoutbarcodes/"
+#FOLDER_MERGEDBC="$WORKING_DIR/merged_withoutbarcodes/"
 FOLDER_MERGED="$WORKING_DIR/merged/"
+## we will have to include the following code 
+#if [ -d $FOLDER_MERGED ]; then
+#    FOLDER_FASTQS="$WORKING_DIR/merged/"
+#else
+#    FOLDER_FASTQS="$WORKING_DIR/fastqs/"
+#fi
 
-if [ -d $FOLDER_MERGED ]; then
-    FOLDER_FASTQS="$WORKING_DIR/merged/" 
-else
-    FOLDER_FASTQS="$WORKING_DIR/fastqs/"
-fi
-
-## FOLDER TRIMMED FASTQS
-FOLDER_TRIMMED="$WORKING_DIR/trimmed/"
+### FOLDER TRIMMED FASTQS
+#FOLDER_TRIMMED="$WORKING_DIR/trimmed/"
 
 ## PATH FOR QC OUTPUTselect 
 FOLDER_QC="$WORKING_DIR/QC/"
@@ -75,20 +86,23 @@ FOLDER_POSTPROCESSED="$WORKING_DIR/QC/fastqc/postprocessed/"
 OUT_PRIMERS="$WORKING_DIR/QC/primers/"
 
 ## PATH FOR QC SCRIPTS
-SCRIPT_TABLE="$scripts_repo/QC/fastQC_table.py"
-PRIMERS="$scripts_repo/QC/primer_QC.py"
-BARCODEPLOT="$scripts_repo/QC/barcodeplot.py"
-PRIMERPLOT="$scripts_repo/QC/primersplot.py"
-REPORT="$scripts_repo/QC/report.py"
-PLOTRESUME="$scripts_repo/QC/resumeplot.py"
-plotquality="$scripts_repo/QC/basequality.py"
+## changed to relative paths
+SCRIPT_TABLE="$scripts_repo/fastQC_table.py"
+PRIMERS="$scripts_repo/primer_QC.py"
+BARCODEPLOT="$scripts_repo/barcodeplot.py"
+PRIMERPLOT="$scripts_repo/primersplot.py"
+REPORT="$scripts_repo/report.py"
+PLOTRESUME="$scripts_repo/resumeplot.py"
+plotquality="$scripts_repo/basequality.py"
+## adapter sequences including truseq and nextera universal sequences
+adaptersRight="$scripts_repo/adapter_sequences/adapters.fa"
 
 ## BARCODES
 if [ -f $adaptersRight ]; then
     
     adapter=$adaptersRight
 else
-    echo "Fatal error, can not find environment variables for adapters"
+    echo "Fatal error, can not find adapter files"
 fi
 
 ## PRIMERS
@@ -101,7 +115,7 @@ fi
 ## Echoes
 echo "WORKING DIRECTORY: $WORKING_DIR"
 echo "FOLDER FASTQS: $FOLDER_FASTQS"
-echo "FOLDER MERGED: $FOLDER_MERGED"
+#echo "FOLDER MERGED: $FOLDER_MERGED"
 echo "FOLDER TRIMMED: $FOLDER_TRIMMED"
 echo "FOLDER QC: $FOLDER_QC"
 echo "FOLDER FASTQC: $FOLDER_FASTQC"
