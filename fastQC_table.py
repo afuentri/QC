@@ -4,11 +4,12 @@ import sys
 import xlsxwriter
 import os
 # add the environment variable 'scripts_repo'
-repo = os.environ['scripts_repo']
-path_fastq_unifier = os.path.join(repo, 'NGS-tools')
+#repo = os.path.abspath(__file__ + "/../")
+#path_fastq_unifier = os.path.join(repo, 'NGS-tools')
 # add the folder of fastq_unifier.py script to the system to import the script
-sys.path.append(path_fastq_unifier)
+#sys.path.append(path_fastq_unifier)
 # import the module
+## dependencies of fastq_unifier
 import fastq_unifier
 
 pre_folder = sys.argv[1]

@@ -45,11 +45,10 @@ BAMS_DIR="$wd"
 
 ## FOLDER FLAGSTAT
 FOLDER_FLAGSTAT="$BAMS_DIR/flagstat/"
-
+QC=$(dirname "$0")
 ## SCRIPTS REPO
-QC="$scripts_repo/QC/"
-REPORT="${QC}report.py"
-MAPPEDCHROMOSOME="${QC}plotmapped_chr.py"
+REPORT="${QC}/report.py"
+MAPPEDCHROMOSOME="${QC}/plotmapped_chr.py"
 
 ## Echoes
 echo "WORKING DIRECTORY: $BAMS_DIR"
@@ -105,12 +104,12 @@ if [ -f $bed ]; then
 
     done
     dos2unix $out_table_reg
-    python ${QC}mapstats.py $out_table_reg 'target_regions'
+    python ${QC}/mapstats.py $out_table_reg 'target_regions'
 fi
 		   
 ## plots mapping statistics
 dos2unix $out_table
-python ${QC}mapstats.py $out_table 'all'
+python ${QC}/mapstats.py $out_table 'all'
 
 ## PDF REPORT
 fof_images=${FOLDER_FLAGSTAT}imagesflagstat.fof

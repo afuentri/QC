@@ -7,7 +7,7 @@
 ## PARSE ARGUMENTS
 primers=false
 
-while getopts hp:b:: option
+while getopts hp:f:t:b:: option
 do
     case "${option}"
     in
@@ -27,13 +27,11 @@ do
 	echo "  -t: Folder with trimmed FASTQ files inside"
 	echo "  -b: (optional) evaluate trimming of primers (folder with FASTA files with primer sequences to evaluate)"
 	echo "  Evaluation of Nextera and Truseq ADAPTER sequences will be performed always"
-	echo "  FASTA files in folder must be named and sepparated in the following way:"
+	echo "  FASTA files in folder must be named and separated in the following way:"
 	echo "   - primers_5.fasta --> primer sequences removed on left end of reads"
 	echo "   - primers_3.fasta --> primer sequences removed on right end of reads"
-        echo "*********************************************************************\
-***************************************************************************************"
-        echo "*********************************************************************\
-***************************************************************************************"
+        echo "*********************************************************************************************************"
+        echo "*********************************************************************************************************"
         echo "GOOD LUCK"
         exit 1
         ;;
@@ -53,6 +51,7 @@ done
 WORKING_DIR="$wd"
 FOLDER_FASTQS="$ff"
 FOLDER_TRIMMED="$ft"
+echo $FOLDER_FASTQS
 scripts_repo=$(dirname "$0")
 ## we will have to include the following code in the specific
 ## pipelines scripts to autodetect which folders to use as we did before
@@ -136,7 +135,7 @@ mkdir $OUT_PRIMERS
 
 pre_counts="pre-triming_counts.txt"
 
-for i in $FOLDER_FASTQS*.f*q*; do
+for i in $FOLDER_FASTQS/*.f*q*; do
     
     echo $i
     zcat $i | echo $((`wc -l`/4))
@@ -145,7 +144,7 @@ done >> $FOLDER_QC$pre_counts
 
 post_counts="post-triming_counts.txt"
 
-for i in $FOLDER_TRIMMED*.f*q*; do
+for i in $FOLDER_TRIMMED/*.f*q*; do
 
     echo $i
     zcat $i | echo $((`wc -l`/4))
@@ -159,7 +158,7 @@ fastqc --version
 cmd="CMD_preprocessed.cmd"
 log="LOG_preprocessed.log"
 
-for i in $FOLDER_FASTQS*.f*q*; do
+for i in $FOLDER_FASTQS/*.f*q*; do
 
     fastq_name=$(basename $i)
     
@@ -224,7 +223,7 @@ fastqc --version
 cmd="CMD_postprocessed.cmd"
 log="LOG_postprocessed.log"
 
-for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
+for i in $FOLDER_TRIMMED/*-trimmed.f*q*; do
 
     fastq_name=$(basename $i)
 
@@ -297,15 +296,15 @@ python3 $plotquality "${FOLDER_QC}pretrimming.fof" "${FOLDER_QC}posttrimming.fof
 if [ -f $adapter ]; then
 
     echo "OK: performing barcode stats"
-    for i in $FOLDER_FASTQS*f*q*; do
+    for i in $FOLDER_FASTQS/*f*q*; do
 	
-	python $PRIMERS $i $adapter $OUT_PRIMERS
+	python3 $PRIMERS $i $adapter $OUT_PRIMERS
 
     done
 
-    for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
+    for i in $FOLDER_TRIMMED/*-trimmed.f*q*; do
 
-	python $PRIMERS $i $adapter $OUT_PRIMERS
+	python3 $PRIMERS $i $adapter $OUT_PRIMERS
 	
     done
 	
@@ -321,15 +320,15 @@ if [ $primers==true ]; then
     if [ -f $primers5 ] && [ -f $primers3 ]; then
 
 	echo "OK: performing primer stats"
-	for i in $FOLDER_FASTQS*f*q*; do
+	for i in $FOLDER_FASTQS/*f*q*; do
 	    
-	    python $PRIMERS $i $primers5 $OUT_PRIMERS
-	    python $PRIMERS $i $primers3 $OUT_PRIMERS
+	    python3 $PRIMERS $i $primers5 $OUT_PRIMERS
+	    python3 $PRIMERS $i $primers3 $OUT_PRIMERS
 	done
 
-	for i in $FOLDER_TRIMMED*-trimmed.f*q*; do
-	    python $PRIMERS $i $primers5 $OUT_PRIMERS
-	    python $PRIMERS $i $primers3 $OUT_PRIMERS
+	for i in $FOLDER_TRIMMED/*-trimmed.f*q*; do
+	    python3 $PRIMERS $i $primers5 $OUT_PRIMERS
+	    python3 $PRIMERS $i $primers3 $OUT_PRIMERS
 	done
 	
     else
@@ -346,8 +345,8 @@ fof_barcodestrimmed="${OUT_PRIMERS}barcodestrimmed.fof"
 ls $OUT_PRIMERS*_adapter_nextera.csv | grep -v "trimmed" > $fof_barcodesraw
 ls $OUT_PRIMERS*-trimmed_adapter_nextera.csv > $fof_barcodestrimmed
 
-python $BARCODEPLOT $fof_barcodesraw $FOLDER_QC$pre_counts $OUT_PRIMERS
-python $BARCODEPLOT $fof_barcodestrimmed $FOLDER_QC$post_counts $OUT_PRIMERS
+python3 $BARCODEPLOT $fof_barcodesraw $FOLDER_QC$pre_counts $OUT_PRIMERS
+python3 $BARCODEPLOT $fof_barcodestrimmed $FOLDER_QC$post_counts $OUT_PRIMERS
 
 ## FOR PRIMERS
 if [ $primers==true ]; then
@@ -364,10 +363,10 @@ if [ $primers==true ]; then
 	ls $OUT_PRIMERS*-trimmed_primers_3.csv > $fof_primers3trimmed
 	ls $OUT_PRIMERS*-trimmed_primers_5.csv > $fof_primers5trimmed
 
-	python $PRIMERPLOT $fof_primers3raw $FOLDER_QC$pre_counts $OUT_PRIMERS
-	python $PRIMERPLOT $fof_primers5raw $FOLDER_QC$pre_counts $OUT_PRIMERS
-	python $PRIMERPLOT $fof_primers3trimmed $FOLDER_QC$post_counts $OUT_PRIMERS
-	python $PRIMERPLOT $fof_primers5trimmed $FOLDER_QC$post_counts $OUT_PRIMERS
+	python3 $PRIMERPLOT $fof_primers3raw $FOLDER_QC$pre_counts $OUT_PRIMERS
+	python3 $PRIMERPLOT $fof_primers5raw $FOLDER_QC$pre_counts $OUT_PRIMERS
+	python3 $PRIMERPLOT $fof_primers3trimmed $FOLDER_QC$post_counts $OUT_PRIMERS
+	python3 $PRIMERPLOT $fof_primers5trimmed $FOLDER_QC$post_counts $OUT_PRIMERS
 
     else
 	echo "Primers QC option was selected but there are no primer files inside folder indicated"
