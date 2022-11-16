@@ -3,7 +3,7 @@ For installation, first clone the repository.
 
 You can install all the dependencies directly using conda:
 ```console
-conda create -n QC -c bioconda -c conda-forge fastqc "python>=3" "r-base>=3.6" parallel samtools
+conda env create -f environment.yml
 ```
 
 #### PIP Install Requirements
