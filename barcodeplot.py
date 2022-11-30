@@ -46,7 +46,7 @@ with open(fof, 'r') as ffof:
         df = pd.read_csv(line, sep=',', header=0,
                          names=['adapter','revcomp_right','right','revcomp_left', 'left'])
         
-        df.index = [sample_name]   
+        df.index = [sample_name] * len(df)
         df2 = df.copy()
         
         df2['revcomp_right'] = df2['revcomp_right']/total_reads

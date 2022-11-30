@@ -315,6 +315,7 @@ else
 fi
 
 ## PRIMERS (OPTIONAL)
+echo $primers
 if [ $primers==true ]; then
 
     if [ -f $primers5 ] && [ -f $primers3 ]; then
@@ -342,8 +343,8 @@ fi
 fof_barcodesraw="${OUT_PRIMERS}barcodesraw.fof"
 fof_barcodestrimmed="${OUT_PRIMERS}barcodestrimmed.fof"
 
-ls $OUT_PRIMERS*_adapter_nextera.csv | grep -v "trimmed" > $fof_barcodesraw
-ls $OUT_PRIMERS*-trimmed_adapter_nextera.csv > $fof_barcodestrimmed
+ls $OUT_PRIMERS*_adapters.csv | grep -v "trimmed" > $fof_barcodesraw
+ls $OUT_PRIMERS*-trimmed_adapters.csv > $fof_barcodestrimmed
 
 python3 $BARCODEPLOT $fof_barcodesraw $FOLDER_QC$pre_counts $OUT_PRIMERS
 python3 $BARCODEPLOT $fof_barcodestrimmed $FOLDER_QC$post_counts $OUT_PRIMERS
